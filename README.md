@@ -1,1 +1,1 @@
-# -s2s-sensic-sdk-android-demo-app
+# s2s-sensic-sdk-android-demo-app
