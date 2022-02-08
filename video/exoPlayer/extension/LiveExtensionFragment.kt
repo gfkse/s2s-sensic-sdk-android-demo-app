@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
-import com.gfk.s2s.exoplayer.ExoplayerS2SExtension
+import com.gfk.s2s.exoplayer.ExoplayerExtension
 import com.gfk.s2s.s2sagent.S2SConfig
 
 open class LiveExtensionFragment : BaseVideoFragment() {
@@ -37,7 +37,7 @@ open class LiveExtensionFragment : BaseVideoFragment() {
             true,
             null
         )
-        ExoplayerS2SExtension(
+        ExoplayerExtension(
             exoPlayer!!,
             config,
             contentId,
