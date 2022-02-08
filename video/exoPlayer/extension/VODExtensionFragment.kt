@@ -8,6 +8,7 @@ import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
 import com.gfk.s2s.exoplayer.ExoplayerS2SExtension
+import com.gfk.s2s.s2sExtension.GfkS2SConfig
 
 class VODExtensionFragment : BaseVideoFragment() {
 
@@ -31,10 +32,10 @@ class VODExtensionFragment : BaseVideoFragment() {
 
         super.prepareVodVideoPlayer()
 
+        val config = GfkS2SConfig(mediaId, configUrl, true, hashMapOf())
         ExoplayerS2SExtension(
             exoPlayer!!,
-            configUrl,
-            mediaId,
+            config,
             contentId,
             hashMapOf(),
             requireContext(),
