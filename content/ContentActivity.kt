@@ -53,7 +53,7 @@ class ContentActivity : AppCompatActivity() {
             ///Example custom params for Spain
             //customParams.put("cp1", "appsBundleID");
 
-            agent.impression(url, customParams)
+            agent.impression("default", customParams)
         }
 
         override fun onReceivedError(
