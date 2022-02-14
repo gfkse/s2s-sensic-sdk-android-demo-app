@@ -15,7 +15,7 @@ class ContentActivity : AppCompatActivity() {
     private lateinit var agent: S2SAgent
 
     private var mediaId = "s2s-exoplayer-android-demo"
-    private var videoUrl = "https://www.sensic.net"
+    private var videoUrl = "http://sensic.net"
     private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
 
     @SuppressLint("SetJavaScriptEnabled")
