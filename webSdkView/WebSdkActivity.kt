@@ -12,8 +12,8 @@ class WebSdkActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_web_sdk)
-        val view = findViewById<WebView>(R.id.webSdkView_webView)
-        view.webViewClient = object : WebViewClient() {
+        val webview = findViewById<WebView>(R.id.webSdkView_webView)
+        webview.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 if (url.contains("https://development.sensic-demo.gfk.com")) {
                     view.loadUrl(url)
@@ -22,8 +22,10 @@ class WebSdkActivity : AppCompatActivity() {
                 return super.shouldOverrideUrlLoading(view, url)
             }
         }
-        view.settings.javaScriptEnabled = true
-        view.settings.domStorageEnabled = true
-        view.loadUrl("https://development.sensic-demo.gfk.com/index.html")
+        webview.settings.javaScriptEnabled = true
+        webview.settings.domStorageEnabled = true
+        webview.settings.allowFileAccess = true
+        webview.settings.allowContentAccess = true
+        webview.loadUrl("https://development.sensic-demo.gfk.com/index.html")
     }
 }
