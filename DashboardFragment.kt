@@ -21,19 +21,22 @@ class DashboardFragment : BaseFragment() {
         val view =  inflater.inflate(R.layout.dashboard_fragment, container, false)
 
         view.findViewById<Button>(R.id.vod_button).setOnClickListener {
-            findNavController().navigate(R.id.actionDashBoardFragment_toVODFragment)
+            findNavController().navigate(R.id.actionDashBoardFragment_to_VODFragment)
         }
         view.findViewById<Button>(R.id.live_button).setOnClickListener {
-            findNavController().navigate(R.id.actionDashBoardFragment_toLiveFragment)
+            findNavController().navigate(R.id.actionDashBoardFragment_to_LiveFragment)
         }
         view.findViewById<Button>(R.id.live_no_seek_button).setOnClickListener {
-            findNavController().navigate(R.id.actionDashBoardFragment_toLiveNoSeekFragment)
+            findNavController().navigate(R.id.actionDashBoardFragment_to_LiveNoSeekFragment)
+        }
+        view.findViewById<Button>(R.id.ima_button).setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardFragment_to_imaFragment)
         }
         view.findViewById<Button>(R.id.vod_extension_button).setOnClickListener {
-            findNavController().navigate(R.id.actionDashBoardFragment_toVODExtensionFragment)
+            findNavController().navigate(R.id.actionDashBoardFragment_to_VODExtensionFragment)
         }
         view.findViewById<Button>(R.id.live_extension_button).setOnClickListener {
-            findNavController().navigate(R.id.actionDashBoardFragment_toLiveExtensionFragment)
+            findNavController().navigate(R.id.actionDashBoardFragment_to_LiveExtensionFragment)
         }
         view.findViewById<Button>(R.id.live_no_seek_extension_button).setOnClickListener {
             findNavController().navigate(R.id.action_dashboardFragment_to_liveNoSeekExtensionFragment)

@@ -32,6 +32,7 @@ import com.google.android.exoplayer2.util.Util
  */
 
 open class BaseVideoFragment : BaseFragment() {
+    private var playerView: PlayerView? = null
     var exoPlayer: ExoPlayer? = null
     var playbackSpeedControlImageButton: ImageButton? = null
     open val videoURL = ""
@@ -42,6 +43,8 @@ open class BaseVideoFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         preferences = requireContext().getSharedPreferences("Settings", Context.MODE_PRIVATE)
     }
+
+
 
     fun prepareVodVideoPlayer() =
         prepareVideoPlayer {
@@ -69,8 +72,9 @@ open class BaseVideoFragment : BaseFragment() {
         }
 
     private fun prepareVideoPlayer(mediaSourceProvider: () -> BaseMediaSource) {
+        playerView = view?.findViewById(R.id.player_view)
         exoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
-        view?.findViewById<PlayerView>(R.id.videoView)?.player = exoPlayer
+        playerView?.player = exoPlayer
 
         playbackSpeedControlImageButton =
             view?.findViewById(R.id.playback_speed_control_image_button)
