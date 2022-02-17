@@ -81,7 +81,7 @@ open class LiveFragment : BaseVideoFragment() {
 
     override fun onStop() {
         super.onStop()
-        exoPlayer?.pause()
+        exoPlayer?.playWhenReady = false
         agent?.flushEventStorage()
         volumeContentObserver?.let {
             requireActivity().contentResolver

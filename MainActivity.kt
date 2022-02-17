@@ -10,7 +10,7 @@ import androidx.multidex.MultiDex
 import com.gfk.s2s.demo.s2s.R
 
 class MainActivity : AppCompatActivity() {
-    var usePictureInPictureByHomeButtonPress = false
+    var usePictureInPictureByHomeButtonPress = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

@@ -2,29 +2,31 @@ package com.gfk.s2s.demo.video.exoPlayer.manual
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.gfk.s2s.demo.BaseFragment
 import com.gfk.s2s.demo.MainActivity
+import com.gfk.s2s.demo.VolumeContentObserver
 import com.gfk.s2s.demo.s2s.R
+import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.MediaSourceFactory
-import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 
-
-class IMAFragment : BaseFragment() {
-    private val TAG = "IMAFragment"
+class IMAFragment : BaseVideoFragment() {
+    override val videoURL = "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"
     private var adsLoader: ImaAdsLoader? = null
-    private var playerView: PlayerView? = null
-    private var exoPlayer: SimpleExoPlayer? = null
+    private var volumeContentObserver: VolumeContentObserver? = null
+
+    var soughtOldPosition: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,6 +43,7 @@ class IMAFragment : BaseFragment() {
         playerView = view.findViewById(R.id.player_view)
         adsLoader = ImaAdsLoader.Builder(requireContext()).build()
         initializePlayer()
+        addVolumeObserver()
     }
 
     private fun initializePlayer() {
@@ -74,29 +77,29 @@ class IMAFragment : BaseFragment() {
         exoPlayer?.playWhenReady = true
     }
 
-    override fun onResume() {
-        super.onResume()
-        exoPlayer?.playWhenReady = true
-    }
+    private fun addVolumeObserver() {
+        volumeContentObserver =
+            object : VolumeContentObserver(requireContext(), Handler(Looper.getMainLooper())) {
+                //This function will scale current volume between [0,100]
+                override fun volumeChanged(currentVolume: Int) {
 
-    override fun onPause() {
-        super.onPause()
-        exoPlayer?.playWhenReady = false
+                }
+            }
+
+        requireActivity().applicationContext.contentResolver
+            .registerContentObserver(Settings.System.CONTENT_URI, true, volumeContentObserver!!)
     }
 
     override fun onStop() {
         super.onStop()
         exoPlayer?.playWhenReady = false
-//        volumeContentObserver?.let {
-//            requireActivity().contentResolver
-//                .unregisterContentObserver(it)
-//        }
-//    }
-
+        volumeContentObserver?.let {
+            requireActivity().contentResolver
+                .unregisterContentObserver(it)
+        }
     }
 
     override fun onDestroy() {
-        Log.e(TAG,"onDestroy")
         adsLoader?.release()
         super.onDestroy()
     }

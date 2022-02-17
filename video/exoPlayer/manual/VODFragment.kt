@@ -33,7 +33,7 @@ class VODFragment : BaseVideoFragment() {
         return inflater.inflate(R.layout.video_fragment, container, false)
     }
 
-    var seekedOldPosition: Int? = null
+    var soughtOldPosition: Int? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,7 +44,7 @@ class VODFragment : BaseVideoFragment() {
         agent = S2SAgent(configUrl, mediaId, context)
 
         agent?.setStreamPositionCallback {
-            seekedOldPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
+            soughtOldPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
         }
 
         exoPlayer?.addListener(object : Player.Listener {
@@ -55,7 +55,7 @@ class VODFragment : BaseVideoFragment() {
                 reason: Int
             ) {
                 super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-                seekedOldPosition = oldPosition.positionMs.toInt()
+                soughtOldPosition = oldPosition.positionMs.toInt()
 
             }
 
@@ -63,7 +63,7 @@ class VODFragment : BaseVideoFragment() {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
                 if (isPlaying) {
-                    seekedOldPosition = null
+                    soughtOldPosition = null
                     agent?.playStreamOnDemand(mediaId, videoURL, getOptions(), null)
                 } else {
                     agent?.stop()
@@ -82,7 +82,7 @@ class VODFragment : BaseVideoFragment() {
 
     override fun onStop() {
         super.onStop()
-        exoPlayer?.pause()
+        exoPlayer?.playWhenReady = false
         agent?.flushEventStorage()
         volumeContentObserver?.let {
             requireActivity().contentResolver

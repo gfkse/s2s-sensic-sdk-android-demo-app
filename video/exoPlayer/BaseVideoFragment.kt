@@ -1,7 +1,5 @@
 package com.gfk.s2s.demo.video.exoPlayer
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
@@ -32,18 +30,16 @@ import com.google.android.exoplayer2.util.Util
  */
 
 open class BaseVideoFragment : BaseFragment() {
-    private var playerView: PlayerView? = null
-    var exoPlayer: ExoPlayer? = null
+    var playerView: PlayerView? = null
+    var exoPlayer: SimpleExoPlayer? = null
     var playbackSpeedControlImageButton: ImageButton? = null
     open val videoURL = ""
-    var playerPosition = 0L
-    lateinit var preferences: SharedPreferences
+    var savedPlayerPosition = 0L
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        preferences = requireContext().getSharedPreferences("Settings", Context.MODE_PRIVATE)
+        playerView = view.findViewById(R.id.player_view)
     }
-
 
 
     fun prepareVodVideoPlayer() =
@@ -72,7 +68,6 @@ open class BaseVideoFragment : BaseFragment() {
         }
 
     private fun prepareVideoPlayer(mediaSourceProvider: () -> BaseMediaSource) {
-        playerView = view?.findViewById(R.id.player_view)
         exoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
         playerView?.player = exoPlayer
 
@@ -81,47 +76,34 @@ open class BaseVideoFragment : BaseFragment() {
         playbackSpeedControlImageButton?.setOnClickListener { showPlayerSpeedDialog() }
 
         exoPlayer?.prepare(mediaSourceProvider())
-        exoPlayer?.seekTo(playerPosition)
+        exoPlayer?.seekTo(savedPlayerPosition)
         exoPlayer?.playWhenReady = true
     }
 
     override fun onResume() {
         super.onResume()
-        (activity as? MainActivity)?.usePictureInPictureByHomeButtonPress = true
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
             activity?.packageManager?.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) == true
+            && activity?.isInPictureInPictureMode == true
         ) {
-            if (activity?.isInPictureInPictureMode == false) {
-                exoPlayer?.playWhenReady = true
-            }
-        } else {
-            exoPlayer?.playWhenReady = true
+            return
+
         }
+        exoPlayer?.playWhenReady = true
+
     }
 
     override fun onPause() {
         super.onPause()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
             activity?.packageManager?.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) == true
+            && activity?.isInPictureInPictureMode == true
         ) {
-            if (activity?.isInPictureInPictureMode == false) {
-                playerPosition = exoPlayer?.currentPosition ?: 0
-                exoPlayer?.playWhenReady = false
-            }
-        } else {
-            playerPosition = exoPlayer?.currentPosition ?: 0
-            exoPlayer?.playWhenReady = false
+            return
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putLong("playerPosition", playerPosition);
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        playerPosition = savedInstanceState?.getLong("playerPosition") ?: 0
+        savedPlayerPosition = exoPlayer?.currentPosition ?: 0
+        exoPlayer?.playWhenReady = false
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -153,6 +135,7 @@ open class BaseVideoFragment : BaseFragment() {
         popupMenu.show()
     }
 
-    private fun changePlaybackSpeed(speed: Float) =
-        exoPlayer?.setPlaybackParameters(PlaybackParameters(speed))
+    private fun changePlaybackSpeed(speed: Float): Unit? {
+        return exoPlayer?.setPlaybackParameters(PlaybackParameters(speed))
+    }
 }
