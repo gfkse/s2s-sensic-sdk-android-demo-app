@@ -33,12 +33,14 @@ open class BaseVideoFragment : BaseFragment() {
     var adsLoader: ImaAdsLoader? = null
     var playbackSpeedControlImageButton: ImageButton? = null
     open val videoURL = ""
-    open val adURL = ""
+    open var adURL = ""
     var savedPlayerPosition = 0L
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playerView = view.findViewById(R.id.player_view)
+        playbackSpeedControlImageButton = view.findViewById(R.id.playback_speed_control_image_button)
+
         adsLoader = ImaAdsLoader.Builder(requireContext()).build()
     }
 

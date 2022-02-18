@@ -20,6 +20,7 @@ class VODFragment : BaseVideoFragment() {
     override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
     private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
+    private val contentId = "default"
     private var volumeContentObserver: VolumeContentObserver? = null
     private var agent: S2SAgent? = null
 
@@ -64,7 +65,7 @@ class VODFragment : BaseVideoFragment() {
                 super.onIsPlayingChanged(isPlaying)
                 if (isPlaying) {
                     soughtOldPosition = null
-                    agent?.playStreamOnDemand(mediaId, videoURL, getOptions(), null)
+                    agent?.playStreamOnDemand(contentId, videoURL, getOptions(), null)
                 } else {
                     agent?.stop()
                 }
@@ -74,7 +75,7 @@ class VODFragment : BaseVideoFragment() {
                 super.onPlaybackParametersChanged(playbackParameters)
                 if (exoPlayer?.isPlaying == true) {
                     agent?.stop()
-                    agent?.playStreamOnDemand(mediaId, videoURL, getOptions(), null)
+                    agent?.playStreamOnDemand(contentId, videoURL, getOptions(), null)
                 }
             }
         })
