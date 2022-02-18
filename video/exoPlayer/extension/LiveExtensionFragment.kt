@@ -30,7 +30,8 @@ open class LiveExtensionFragment : BaseVideoFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        super.prepareLiveVideoPlayer()
+        super.prepareVideoPlayer()
+
         val config = S2SConfig(
             mediaId,
             configUrl,

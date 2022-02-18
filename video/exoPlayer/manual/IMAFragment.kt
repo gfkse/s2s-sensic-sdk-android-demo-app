@@ -25,9 +25,6 @@ class IMAFragment : BaseVideoFragment() {
     override val videoURL = "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"
     private var adsLoader: ImaAdsLoader? = null
     private var volumeContentObserver: VolumeContentObserver? = null
-
-    var soughtOldPosition: Int? = null
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,13 +37,12 @@ class IMAFragment : BaseVideoFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        playerView = view.findViewById(R.id.player_view)
         adsLoader = ImaAdsLoader.Builder(requireContext()).build()
-        initializePlayer()
+        prepareVideoPlayer()
         addVolumeObserver()
     }
 
-    private fun initializePlayer() {
+    override fun prepareVideoPlayer() {
         // Set up the factory for media sources, passing the ads loader and ad view providers.
         val dataSourceFactory: DataSource.Factory =
             DefaultDataSourceFactory(
@@ -67,7 +63,7 @@ class IMAFragment : BaseVideoFragment() {
 
         // Create the MediaItem to play, specifying the content URI and ad tag URI.
         val contentUri = Uri.parse(getString(R.string.content_url))
-        val adTagUri = Uri.parse(getString(R.string.ad_pre_roll_linear_skippable))
+        val adTagUri = Uri.parse(getString(R.string.ad_vmap_pods))
         val mediaItem = MediaItem.Builder().setUri(contentUri).setAdTagUri(adTagUri).build()
 
         // Prepare the content and ad to be played with the SimpleExoPlayer.

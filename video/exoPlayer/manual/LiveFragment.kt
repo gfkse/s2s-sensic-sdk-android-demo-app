@@ -37,7 +37,8 @@ open class LiveFragment : BaseVideoFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        super.prepareLiveVideoPlayer()
+        super.prepareVideoPlayer()
+
         addVolumeObserver()
 
         agent = S2SAgent(configUrl, mediaId, context)

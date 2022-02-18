@@ -38,7 +38,7 @@ class VODFragment : BaseVideoFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        super.prepareVodVideoPlayer()
+        super.prepareVideoPlayer()
         addVolumeObserver()
 
         agent = S2SAgent(configUrl, mediaId, context)

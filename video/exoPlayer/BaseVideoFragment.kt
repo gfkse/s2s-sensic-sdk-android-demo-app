@@ -15,6 +15,8 @@ import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.s2s.R
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.BaseMediaSource
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
+import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
@@ -41,42 +43,31 @@ open class BaseVideoFragment : BaseFragment() {
         playerView = view.findViewById(R.id.player_view)
     }
 
-
-    fun prepareVodVideoPlayer() =
-        prepareVideoPlayer {
-            val userAgent = Util.getUserAgent(
-                requireContext(), context?.getString(R.string.app_name)
-                    ?: ""
-            )
-            ProgressiveMediaSource.Factory(
-                DefaultDataSourceFactory(
-                    requireContext(),
-                    userAgent
-                )
-            ).createMediaSource(Uri.parse(videoURL))
-        }
-
-    fun prepareLiveVideoPlayer() =
-        prepareVideoPlayer {
-            val dataSourceFactory: DataSource.Factory = DefaultHttpDataSourceFactory(
+    open fun prepareVideoPlayer() {
+        // Set up the factory for media sources, passing the ads loader and ad view providers.
+        val dataSourceFactory: DataSource.Factory =
+            DefaultDataSourceFactory(
+                requireContext(),
                 Util.getUserAgent(requireContext(), getString(R.string.app_name))
             )
 
-            HlsMediaSource.Factory(dataSourceFactory).createMediaSource(
-                Uri.parse(videoURL)
-            )
-        }
+        val mediaSourceFactory: MediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
+            .setAdViewProvider(playerView)
 
-    private fun prepareVideoPlayer(mediaSourceProvider: () -> BaseMediaSource) {
-        exoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
+        // Create a SimpleExoPlayer and set it as the player for content and ads.
+        exoPlayer =
+            SimpleExoPlayer.Builder(requireContext()).setMediaSourceFactory(mediaSourceFactory)
+                .build()
         playerView?.player = exoPlayer
 
-        playbackSpeedControlImageButton =
-            view?.findViewById(R.id.playback_speed_control_image_button)
-        playbackSpeedControlImageButton?.setOnClickListener { showPlayerSpeedDialog() }
+        // Create the MediaItem to play, specifying the content URI and ad tag URI.
+        val contentUri = Uri.parse(videoURL)
+        val mediaItem = MediaItem.Builder().setUri(contentUri).build()
 
-        exoPlayer?.prepare(mediaSourceProvider())
-        exoPlayer?.seekTo(savedPlayerPosition)
+        // Prepare the content and ad to be played with the SimpleExoPlayer.
+        exoPlayer?.setMediaItem(mediaItem)
+        exoPlayer?.prepare()
+        // Set PlayWhenReady. If true, content and ads will autoplay.
         exoPlayer?.playWhenReady = true
     }
 
@@ -88,10 +79,8 @@ open class BaseVideoFragment : BaseFragment() {
             && activity?.isInPictureInPictureMode == true
         ) {
             return
-
         }
         exoPlayer?.playWhenReady = true
-
     }
 
     override fun onPause() {

@@ -30,7 +30,7 @@ class VODExtensionFragment : BaseVideoFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        super.prepareVodVideoPlayer()
+        super.prepareVideoPlayer()
 
         val config = S2SConfig(
             mediaId,
