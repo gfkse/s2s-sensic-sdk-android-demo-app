@@ -11,18 +11,13 @@ import android.widget.ImageButton
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.gfk.s2s.demo.BaseFragment
-import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.s2s.R
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.source.BaseMediaSource
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.MediaSourceFactory
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 
 /**
