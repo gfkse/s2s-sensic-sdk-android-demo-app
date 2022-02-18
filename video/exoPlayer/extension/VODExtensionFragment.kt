@@ -47,10 +47,4 @@ class VODExtensionFragment : BaseVideoFragment() {
             this,
         )
     }
-
-    override fun onStop() {
-        super.onStop()
-        exoPlayer?.pause()
-    }
-
 }

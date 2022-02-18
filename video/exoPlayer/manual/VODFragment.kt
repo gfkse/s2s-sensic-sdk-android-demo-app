@@ -82,7 +82,6 @@ class VODFragment : BaseVideoFragment() {
 
     override fun onStop() {
         super.onStop()
-        exoPlayer?.playWhenReady = false
         agent?.flushEventStorage()
         volumeContentObserver?.let {
             requireActivity().contentResolver

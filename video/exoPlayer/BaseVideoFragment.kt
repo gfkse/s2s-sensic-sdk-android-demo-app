@@ -13,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.gfk.s2s.demo.BaseFragment
 import com.gfk.s2s.demo.s2s.R
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.ui.PlayerView
@@ -29,16 +30,19 @@ import com.google.android.exoplayer2.util.Util
 open class BaseVideoFragment : BaseFragment() {
     var playerView: PlayerView? = null
     var exoPlayer: SimpleExoPlayer? = null
+    var adsLoader: ImaAdsLoader? = null
     var playbackSpeedControlImageButton: ImageButton? = null
     open val videoURL = ""
+    open val adURL = ""
     var savedPlayerPosition = 0L
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playerView = view.findViewById(R.id.player_view)
+        adsLoader = ImaAdsLoader.Builder(requireContext()).build()
     }
 
-    open fun prepareVideoPlayer() {
+    fun prepareVideoPlayer() {
         // Set up the factory for media sources, passing the ads loader and ad view providers.
         val dataSourceFactory: DataSource.Factory =
             DefaultDataSourceFactory(
@@ -47,6 +51,7 @@ open class BaseVideoFragment : BaseFragment() {
             )
 
         val mediaSourceFactory: MediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
+            .setAdsLoaderProvider { adsLoader }
             .setAdViewProvider(playerView)
 
         // Create a SimpleExoPlayer and set it as the player for content and ads.
@@ -54,10 +59,13 @@ open class BaseVideoFragment : BaseFragment() {
             SimpleExoPlayer.Builder(requireContext()).setMediaSourceFactory(mediaSourceFactory)
                 .build()
         playerView?.player = exoPlayer
+        adsLoader?.setPlayer(exoPlayer)
 
         // Create the MediaItem to play, specifying the content URI and ad tag URI.
+
+
         val contentUri = Uri.parse(videoURL)
-        val mediaItem = MediaItem.Builder().setUri(contentUri).build()
+        val mediaItem = MediaItem.Builder().setUri(contentUri).setAdTagUri(adURL).build()
 
         // Prepare the content and ad to be played with the SimpleExoPlayer.
         exoPlayer?.setMediaItem(mediaItem)
@@ -121,5 +129,15 @@ open class BaseVideoFragment : BaseFragment() {
 
     private fun changePlaybackSpeed(speed: Float): Unit? {
         return exoPlayer?.setPlaybackParameters(PlaybackParameters(speed))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        exoPlayer?.playWhenReady = false
+    }
+
+    override fun onDestroy() {
+        adsLoader?.release()
+        super.onDestroy()
     }
 }
