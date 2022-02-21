@@ -28,9 +28,9 @@ class VODIMAFragment : BaseVideoFragment() {
     private var volumeContentObserver: VolumeContentObserver? = null
     private var contentAgent: S2SAgent? = null
     private var adAgent: S2SAgent? = null
-
     private var isPlayingAd = false
-    private var isPreRollPlayed = false
+    private var isPostRollPlayed = false
+    var soughtPosition: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,12 +38,9 @@ class VODIMAFragment : BaseVideoFragment() {
         savedInstanceState: Bundle?
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
-            getString(R.string.fragment_title_ima)
+            getString(R.string.fragment_title_vod_ima)
         return inflater.inflate(R.layout.video_fragment, container, false)
     }
-
-    var soughtOldPosition: Int? = null
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,11 +53,11 @@ class VODIMAFragment : BaseVideoFragment() {
         adAgent = S2SAgent(configUrl, mediaId, context)
 
         contentAgent?.setStreamPositionCallback {
-            soughtOldPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
+            soughtPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
         }
 
         adAgent?.setStreamPositionCallback {
-            soughtOldPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
+            soughtPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
         }
 
         exoPlayer?.addListener(object : Player.Listener {
@@ -71,25 +68,18 @@ class VODIMAFragment : BaseVideoFragment() {
                 reason: Int
             ) {
                 super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-                log("onPositionDiscontinuity oldPosition = ${oldPosition.positionMs} newPosition = ${newPosition.positionMs}")
-
-                soughtOldPosition = oldPosition.positionMs.toInt()
+                soughtPosition = oldPosition.positionMs.toInt()
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
-                log("isPlaying = $isPlaying isAd = ${exoPlayer?.isPlayingAd}")
-
                 if (isPlaying) {
-                    soughtOldPosition = null
+                    soughtPosition = null
                     if (exoPlayer?.isPlayingAd == true) {
-                        log("ad play")
-
                         adAgent?.playStreamOnDemand(adId, videoURL + "ads", getOptions(), null)
                     } else {
-                        log("content play  position = ${exoPlayer?.contentPosition} duration = ${exoPlayer?.duration}")
-                        isPreRollPlayed = exoPlayer?.contentPosition ?: 0 > exoPlayer?.duration ?: 0
-                        if (!isPreRollPlayed) {
+                        isPostRollPlayed = exoPlayer?.contentPosition ?: 0 > exoPlayer?.duration ?: 0
+                        if (!isPostRollPlayed) {
                             contentAgent?.playStreamOnDemand(
                                 contentId,
                                 videoURL,
@@ -100,11 +90,9 @@ class VODIMAFragment : BaseVideoFragment() {
                     }
                 } else {
                     if (isPlayingAd) {
-                        log("ad stop")
                         adAgent?.stop()
                     } else {
-                        log("content stop")
-                        if (!isPreRollPlayed) {
+                        if (!isPostRollPlayed) {
                             contentAgent?.stop()
                         }
                     }
@@ -126,8 +114,8 @@ class VODIMAFragment : BaseVideoFragment() {
 
     override fun onStop() {
         super.onStop()
-        contentAgent?.flushEventStorage()
         adAgent?.flushEventStorage()
+        contentAgent?.flushEventStorage()
         volumeContentObserver?.let {
             requireActivity().contentResolver
                 .unregisterContentObserver(it)
@@ -156,7 +144,4 @@ class VODIMAFragment : BaseVideoFragment() {
         requireActivity().applicationContext.contentResolver
             .registerContentObserver(Settings.System.CONTENT_URI, true, volumeContentObserver!!)
     }
-
-    private fun log(message: String?) = Log.e("VODIMAFragment", message ?: "")
-
 }

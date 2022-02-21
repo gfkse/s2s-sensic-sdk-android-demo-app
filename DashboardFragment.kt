@@ -32,6 +32,9 @@ class DashboardFragment : BaseFragment() {
         view.findViewById<Button>(R.id.vod_ima_button).setOnClickListener {
             findNavController().navigate(R.id.action_dashboardFragment_to_vodImaFragment)
         }
+        view.findViewById<Button>(R.id.live_ima_button).setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardFragment_to_liveImaFragment)
+        }
         view.findViewById<Button>(R.id.vod_extension_button).setOnClickListener {
             findNavController().navigate(R.id.actionDashBoardFragment_to_VODExtensionFragment)
         }
