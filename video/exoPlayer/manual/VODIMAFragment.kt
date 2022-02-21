@@ -92,6 +92,7 @@ class VODIMAFragment : BaseVideoFragment() {
                         if (!isPostRollPlayed) {
                             contentAgent?.stop()
                         }
+                        isPostRollPlayed = false
                     }
                 }
 
