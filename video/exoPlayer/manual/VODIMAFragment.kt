@@ -4,18 +4,15 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.core.view.isVisible
 import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.VolumeContentObserver
 import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
 import com.gfk.s2s.s2sagent.S2SAgent
-import com.gfk.s2s.utils.Logger
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 
@@ -44,7 +41,7 @@ class VODIMAFragment : BaseVideoFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adURL = getString(R.string.ad_pre_roll_linear_skippable)
+        adURL = getString(R.string.ad_vmap_pods)
 
         prepareVideoPlayer()
         addVolumeObserver()
