@@ -30,6 +30,7 @@ class VODIMAFragment : BaseVideoFragment() {
     private var adAgent: S2SAgent? = null
 
     private var isPlayingAd = false
+    private var isPreRollPlayed = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,9 +44,10 @@ class VODIMAFragment : BaseVideoFragment() {
 
     var soughtOldPosition: Int? = null
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adURL = getString(R.string.ad_vmap_pods)
+        adURL = getString(R.string.ad_pre_roll_linear_skippable)
 
         prepareVideoPlayer()
         addVolumeObserver()
@@ -58,7 +60,7 @@ class VODIMAFragment : BaseVideoFragment() {
         }
 
         adAgent?.setStreamPositionCallback {
-            exoPlayer?.currentPosition?.toInt() ?: 0
+            soughtOldPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
         }
 
         exoPlayer?.addListener(object : Player.Listener {
@@ -69,7 +71,8 @@ class VODIMAFragment : BaseVideoFragment() {
                 reason: Int
             ) {
                 super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-                log("onPositionDiscontinuity oldPosition = $oldPosition newPosition = $newPosition")
+                log("onPositionDiscontinuity oldPosition = ${oldPosition.positionMs} newPosition = ${newPosition.positionMs}")
+
                 soughtOldPosition = oldPosition.positionMs.toInt()
             }
 
@@ -78,17 +81,32 @@ class VODIMAFragment : BaseVideoFragment() {
                 log("isPlaying = $isPlaying isAd = ${exoPlayer?.isPlayingAd}")
 
                 if (isPlaying) {
+                    soughtOldPosition = null
                     if (exoPlayer?.isPlayingAd == true) {
+                        log("ad play")
+
                         adAgent?.playStreamOnDemand(adId, videoURL + "ads", getOptions(), null)
                     } else {
-                        soughtOldPosition = null
-                        contentAgent?.playStreamOnDemand(contentId, videoURL, getOptions(), null)
+                        log("content play  position = ${exoPlayer?.contentPosition} duration = ${exoPlayer?.duration}")
+                        isPreRollPlayed = exoPlayer?.contentPosition ?: 0 > exoPlayer?.duration ?: 0
+                        if (!isPreRollPlayed) {
+                            contentAgent?.playStreamOnDemand(
+                                contentId,
+                                videoURL,
+                                getOptions(),
+                                null
+                            )
+                        }
                     }
                 } else {
                     if (isPlayingAd) {
+                        log("ad stop")
                         adAgent?.stop()
                     } else {
-                        contentAgent?.stop()
+                        log("content stop")
+                        if (!isPreRollPlayed) {
+                            contentAgent?.stop()
+                        }
                     }
                 }
 
