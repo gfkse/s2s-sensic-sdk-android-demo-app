@@ -70,11 +70,14 @@ class VODIMAFragment : BaseVideoFragment() {
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
-                if (isPlaying) {
-                    soughtPosition = null
-                    if (exoPlayer?.isPlayingAd == true) {
+
+                when {
+                    exoPlayer?.isPlayingAd == true -> {
+                        soughtPosition = null
                         adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
-                    } else {
+                    }
+                    isPlaying -> {
+                        soughtPosition = null
                         isPostRollPlayed = exoPlayer?.contentPosition ?: 0 > exoPlayer?.duration ?: 0
                         if (!isPostRollPlayed) {
                             contentAgent?.playStreamOnDemand(
@@ -85,10 +88,10 @@ class VODIMAFragment : BaseVideoFragment() {
                             )
                         }
                     }
-                } else {
-                    if (isPlayingAd) {
+                    isPlayingAd -> {
                         adAgent?.stop()
-                    } else {
+                    }
+                    else -> {
                         if (!isPostRollPlayed) {
                             contentAgent?.stop()
                         }

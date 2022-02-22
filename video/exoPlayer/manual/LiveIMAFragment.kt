@@ -67,11 +67,12 @@ open class LiveIMAFragment : BaseVideoFragment() {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
 
-                if (isPlaying) {
-                    soughtPosition = null
-                    if (exoPlayer?.isPlayingAd == true) {
+                when {
+                    exoPlayer?.isPlayingAd == true -> {
+                        soughtPosition = null
                         adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
-                    } else {
+                    }
+                    isPlaying -> {
                         contentAgent?.playStreamLive(
                             contentIdDefault,
                             "",
@@ -81,10 +82,10 @@ open class LiveIMAFragment : BaseVideoFragment() {
                             null
                         )
                     }
-                } else {
-                    if (isPlayingAd) {
+                    isPlayingAd -> {
                         adAgent?.stop()
-                    } else {
+                    }
+                    else -> {
                         contentAgent?.stop()
                     }
                 }
