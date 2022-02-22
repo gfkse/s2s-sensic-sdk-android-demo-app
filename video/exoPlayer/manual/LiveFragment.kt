@@ -21,7 +21,7 @@ open class LiveFragment : BaseVideoFragment() {
     override val videoURL = "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"
     private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
-    private val contentId = "default"
+    private val contentIdDefault = "default"
     private var volumeContentObserver: VolumeContentObserver? = null
     private var agent: S2SAgent? = null
 
@@ -50,7 +50,7 @@ open class LiveFragment : BaseVideoFragment() {
 
                 if (isPlaying) {
                     agent?.playStreamLive(
-                        contentId,
+                        contentIdDefault,
                         "",
                         0,
                         configUrl,
@@ -67,7 +67,7 @@ open class LiveFragment : BaseVideoFragment() {
                 if (exoPlayer?.isPlaying == true) {
                     agent?.stop()
                     agent?.playStreamLive(
-                        contentId,
+                        contentIdDefault,
                         "",
                         0,
                         configUrl,

@@ -21,8 +21,8 @@ open class LiveIMAFragment : BaseVideoFragment() {
     override val videoURL = "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"
     private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
-    private val contentId = "default"
-    private val adId = "ad"
+    private val contentIdDefault = "default"
+    private val contentIdAd = "ad"
     private var volumeContentObserver: VolumeContentObserver? = null
     private var contentAgent: S2SAgent? = null
     private var adAgent: S2SAgent? = null
@@ -70,10 +70,10 @@ open class LiveIMAFragment : BaseVideoFragment() {
                 if (isPlaying) {
                     soughtPosition = null
                     if (exoPlayer?.isPlayingAd == true) {
-                        adAgent?.playStreamOnDemand(adId, videoURL + "ads", getOptions(), null)
+                        adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
                     } else {
                         contentAgent?.playStreamLive(
-                            contentId,
+                            contentIdDefault,
                             "",
                             0,
                             configUrl,
@@ -98,7 +98,7 @@ open class LiveIMAFragment : BaseVideoFragment() {
                 if (exoPlayer?.isPlaying == true) {
                     contentAgent?.stop()
                     contentAgent?.playStreamLive(
-                        contentId,
+                        contentIdDefault,
                         "",
                         0,
                         configUrl,

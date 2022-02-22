@@ -20,8 +20,8 @@ class VODIMAFragment : BaseVideoFragment() {
     override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
     private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
-    private val contentId = "default"
-    private val adId = "ad"
+    private val contentIdDefault = "default"
+    private val contentIdAd = "ad"
     private var volumeContentObserver: VolumeContentObserver? = null
     private var contentAgent: S2SAgent? = null
     private var adAgent: S2SAgent? = null
@@ -73,12 +73,12 @@ class VODIMAFragment : BaseVideoFragment() {
                 if (isPlaying) {
                     soughtPosition = null
                     if (exoPlayer?.isPlayingAd == true) {
-                        adAgent?.playStreamOnDemand(adId, videoURL + "ads", getOptions(), null)
+                        adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
                     } else {
                         isPostRollPlayed = exoPlayer?.contentPosition ?: 0 > exoPlayer?.duration ?: 0
                         if (!isPostRollPlayed) {
                             contentAgent?.playStreamOnDemand(
-                                contentId,
+                                contentIdDefault,
                                 videoURL,
                                 getOptions(),
                                 null
@@ -104,7 +104,7 @@ class VODIMAFragment : BaseVideoFragment() {
                 super.onPlaybackParametersChanged(playbackParameters)
                 if (exoPlayer?.isPlaying == true) {
                     contentAgent?.stop()
-                    contentAgent?.playStreamOnDemand(contentId, videoURL, getOptions(), null)
+                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
                 }
             }
         })
