@@ -70,7 +70,7 @@ open class LiveIMAFragment : BaseVideoFragment() {
                 when {
                     exoPlayer?.isPlayingAd == true -> {
                         soughtPosition = null
-                        adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
+                        adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", null, null)
                     }
                     isPlaying -> {
                         contentAgent?.playStreamLive(
@@ -133,7 +133,7 @@ open class LiveIMAFragment : BaseVideoFragment() {
         volumeContentObserver =
             object : VolumeContentObserver(requireContext(), Handler(Looper.getMainLooper())) {
                 override fun volumeChanged(currentVolume: Int) {
-                    contentAgent?.volume("" + currentVolume)
+                    if (!isPlayingAd) contentAgent?.volume("" + currentVolume)
                 }
             }
         requireActivity().applicationContext.contentResolver
