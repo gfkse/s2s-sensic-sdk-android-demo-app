@@ -1,7 +1,5 @@
 package com.gfk.s2s.demo.video.exoPlayer
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
@@ -13,16 +11,14 @@ import android.widget.ImageButton
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.gfk.s2s.demo.BaseFragment
-import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.s2s.R
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.source.BaseMediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
+import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 
 /**
@@ -32,92 +28,76 @@ import com.google.android.exoplayer2.util.Util
  */
 
 open class BaseVideoFragment : BaseFragment() {
-    var exoPlayer: ExoPlayer? = null
+    var playerView: PlayerView? = null
+    var exoPlayer: SimpleExoPlayer? = null
+    var adsLoader: ImaAdsLoader? = null
     var playbackSpeedControlImageButton: ImageButton? = null
     open val videoURL = ""
-    var playerPosition = 0L
-    lateinit var preferences: SharedPreferences
+    open var adURL = ""
+    var savedPlayerPosition = 0L
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        preferences = requireContext().getSharedPreferences("Settings", Context.MODE_PRIVATE)
+        playerView = view.findViewById(R.id.player_view)
+        playbackSpeedControlImageButton = view.findViewById(R.id.playback_speed_control_image_button)
+
+        adsLoader = ImaAdsLoader.Builder(requireContext()).build()
     }
 
-    fun prepareVodVideoPlayer() =
-        prepareVideoPlayer {
-            val userAgent = Util.getUserAgent(
-                requireContext(), context?.getString(R.string.app_name)
-                    ?: ""
-            )
-            ProgressiveMediaSource.Factory(
-                DefaultDataSourceFactory(
-                    requireContext(),
-                    userAgent
-                )
-            ).createMediaSource(Uri.parse(videoURL))
-        }
-
-    fun prepareLiveVideoPlayer() =
-        prepareVideoPlayer {
-            val dataSourceFactory: DataSource.Factory = DefaultHttpDataSourceFactory(
+    fun prepareVideoPlayer() {
+        // Set up the factory for media sources, passing the ads loader and ad view providers.
+        val dataSourceFactory: DataSource.Factory =
+            DefaultDataSourceFactory(
+                requireContext(),
                 Util.getUserAgent(requireContext(), getString(R.string.app_name))
             )
 
-            HlsMediaSource.Factory(dataSourceFactory).createMediaSource(
-                Uri.parse(videoURL)
-            )
-        }
+        val mediaSourceFactory: MediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
+            .setAdsLoaderProvider { adsLoader }
+            .setAdViewProvider(playerView)
 
-    private fun prepareVideoPlayer(mediaSourceProvider: () -> BaseMediaSource) {
-        exoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
-        view?.findViewById<PlayerView>(R.id.videoView)?.player = exoPlayer
+        // Create a SimpleExoPlayer and set it as the player for content and ads.
+        exoPlayer =
+            SimpleExoPlayer.Builder(requireContext()).setMediaSourceFactory(mediaSourceFactory)
+                .build()
+        playerView?.player = exoPlayer
+        adsLoader?.setPlayer(exoPlayer)
 
-        playbackSpeedControlImageButton =
-            view?.findViewById(R.id.playback_speed_control_image_button)
-        playbackSpeedControlImageButton?.setOnClickListener { showPlayerSpeedDialog() }
+        // Create the MediaItem to play, specifying the content URI and ad tag URI.
 
-        exoPlayer?.prepare(mediaSourceProvider())
-        exoPlayer?.seekTo(playerPosition)
+
+        val contentUri = Uri.parse(videoURL)
+        val mediaItem = MediaItem.Builder().setUri(contentUri).setAdTagUri(adURL).build()
+
+        // Prepare the content and ad to be played with the SimpleExoPlayer.
+        exoPlayer?.setMediaItem(mediaItem)
+        exoPlayer?.prepare()
+        // Set PlayWhenReady. If true, content and ads will autoplay.
         exoPlayer?.playWhenReady = true
     }
 
     override fun onResume() {
         super.onResume()
-        (activity as? MainActivity)?.usePictureInPictureByHomeButtonPress = true
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
             activity?.packageManager?.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) == true
+            && activity?.isInPictureInPictureMode == true
         ) {
-            if (activity?.isInPictureInPictureMode == false) {
-                exoPlayer?.playWhenReady = true
-            }
-        } else {
-            exoPlayer?.playWhenReady = true
+            return
         }
+        exoPlayer?.playWhenReady = true
     }
 
     override fun onPause() {
         super.onPause()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
             activity?.packageManager?.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) == true
+            && activity?.isInPictureInPictureMode == true
         ) {
-            if (activity?.isInPictureInPictureMode == false) {
-                playerPosition = exoPlayer?.currentPosition ?: 0
-                exoPlayer?.playWhenReady = false
-            }
-        } else {
-            playerPosition = exoPlayer?.currentPosition ?: 0
-            exoPlayer?.playWhenReady = false
+            return
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putLong("playerPosition", playerPosition);
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        playerPosition = savedInstanceState?.getLong("playerPosition") ?: 0
+        savedPlayerPosition = exoPlayer?.currentPosition ?: 0
+        exoPlayer?.playWhenReady = false
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -149,6 +129,17 @@ open class BaseVideoFragment : BaseFragment() {
         popupMenu.show()
     }
 
-    private fun changePlaybackSpeed(speed: Float) =
-        exoPlayer?.setPlaybackParameters(PlaybackParameters(speed))
+    private fun changePlaybackSpeed(speed: Float): Unit? {
+        return exoPlayer?.setPlaybackParameters(PlaybackParameters(speed))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        exoPlayer?.playWhenReady = false
+    }
+
+    override fun onDestroy() {
+        adsLoader?.release()
+        super.onDestroy()
+    }
 }
