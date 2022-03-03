@@ -15,7 +15,7 @@ open class LiveExtensionFragment : BaseVideoFragment() {
     override val videoURL = "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"
     private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
-    private val contentIdDefault = "default"
+    private val contentId = "default"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,8 +30,7 @@ open class LiveExtensionFragment : BaseVideoFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        super.prepareVideoPlayer()
-
+        super.prepareLiveVideoPlayer()
         val config = S2SConfig(
             mediaId,
             configUrl,
@@ -41,10 +40,15 @@ open class LiveExtensionFragment : BaseVideoFragment() {
         ExoplayerExtension(
             exoPlayer!!,
             config,
-            contentIdDefault,
+            contentId,
             hashMapOf(),
             requireContext(),
             this,
         )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        exoPlayer?.pause()
     }
 }
