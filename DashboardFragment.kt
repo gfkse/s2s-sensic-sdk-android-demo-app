@@ -21,10 +21,10 @@ class DashboardFragment : BaseFragment() {
         val view =  inflater.inflate(R.layout.dashboard_fragment, container, false)
 
         view.findViewById<Button>(R.id.vod_button).setOnClickListener {
-            findNavController().navigate(R.id.actionDashBoardFragment_to_VODFragment)
+            findNavController().navigate(R.id.actionDashBoardFragment_to_vodFragment)
         }
         view.findViewById<Button>(R.id.live_button).setOnClickListener {
-            findNavController().navigate(R.id.actionDashBoardFragment_to_LiveFragment)
+            findNavController().navigate(R.id.actionDashBoardFragment_to_liveFragment)
         }
         view.findViewById<Button>(R.id.live_no_seek_button).setOnClickListener {
             findNavController().navigate(R.id.actionDashBoardFragment_to_LiveNoSeekFragment)
@@ -36,13 +36,16 @@ class DashboardFragment : BaseFragment() {
             findNavController().navigate(R.id.action_dashboardFragment_to_liveImaFragment)
         }
         view.findViewById<Button>(R.id.vod_extension_button).setOnClickListener {
-            findNavController().navigate(R.id.actionDashBoardFragment_to_VODExtensionFragment)
+            findNavController().navigate(R.id.actionDashBoardFragment_to_vodExtensionFragment)
         }
         view.findViewById<Button>(R.id.live_extension_button).setOnClickListener {
-            findNavController().navigate(R.id.actionDashBoardFragment_to_LiveExtensionFragment)
+            findNavController().navigate(R.id.actionDashBoardFragment_to_liveExtensionFragment)
         }
         view.findViewById<Button>(R.id.live_no_seek_extension_button).setOnClickListener {
             findNavController().navigate(R.id.action_dashboardFragment_to_liveNoSeekExtensionFragment)
+        }
+        view.findViewById<Button>(R.id.vod_ima_extension_button).setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardFragment_to_vodImaExtensionFragment)
         }
         view.findViewById<Button>(R.id.content_button).setOnClickListener {
             findNavController().navigate(R.id.action_dashboardFragment_to_contentActivity)

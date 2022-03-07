@@ -67,12 +67,11 @@ open class LiveIMAFragment : BaseVideoFragment() {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
 
-                when {
-                    exoPlayer?.isPlayingAd == true -> {
-                        soughtPosition = null
-                        adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", null, null)
-                    }
-                    isPlaying -> {
+                if (isPlaying) {
+                    soughtPosition = null
+                    if (exoPlayer?.isPlayingAd == true) {
+                        adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
+                    } else {
                         contentAgent?.playStreamLive(
                             contentIdDefault,
                             "",
@@ -82,10 +81,10 @@ open class LiveIMAFragment : BaseVideoFragment() {
                             null
                         )
                     }
-                    isPlayingAd -> {
+                } else {
+                    if (isPlayingAd) {
                         adAgent?.stop()
-                    }
-                    else -> {
+                    } else {
                         contentAgent?.stop()
                     }
                 }
@@ -133,7 +132,7 @@ open class LiveIMAFragment : BaseVideoFragment() {
         volumeContentObserver =
             object : VolumeContentObserver(requireContext(), Handler(Looper.getMainLooper())) {
                 override fun volumeChanged(currentVolume: Int) {
-                    if (!isPlayingAd) contentAgent?.volume("" + currentVolume)
+                    contentAgent?.volume("" + currentVolume)
                 }
             }
         requireActivity().applicationContext.contentResolver
