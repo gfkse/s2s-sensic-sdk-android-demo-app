@@ -23,7 +23,7 @@ class VODIMAExtensionFragment : BaseVideoFragment() {
         savedInstanceState: Bundle?
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
-            getString(R.string.fragment_title_vod)
+            getString(R.string.fragment_title_vod_ima)
         return inflater.inflate(R.layout.video_fragment, container, false)
     }
 
