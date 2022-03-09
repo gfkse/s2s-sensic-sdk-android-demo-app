@@ -20,7 +20,6 @@ class VODFragment : BaseVideoFragment() {
     override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
     private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
-    private val contentIdDefault = "default"
     private var volumeContentObserver: VolumeContentObserver? = null
     private var agent: S2SAgent? = null
 
@@ -34,18 +33,18 @@ class VODFragment : BaseVideoFragment() {
         return inflater.inflate(R.layout.video_fragment, container, false)
     }
 
-    var soughtOldPosition: Int? = null
+    var seekedOldPosition: Int? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        prepareVideoPlayer()
+        super.prepareVodVideoPlayer()
         addVolumeObserver()
 
         agent = S2SAgent(configUrl, mediaId, context)
 
         agent?.setStreamPositionCallback {
-            soughtOldPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
+            seekedOldPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
         }
 
         exoPlayer?.addListener(object : Player.Listener {
@@ -56,7 +55,7 @@ class VODFragment : BaseVideoFragment() {
                 reason: Int
             ) {
                 super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-                soughtOldPosition = oldPosition.positionMs.toInt()
+                seekedOldPosition = oldPosition.positionMs.toInt()
 
             }
 
@@ -64,8 +63,8 @@ class VODFragment : BaseVideoFragment() {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
                 if (isPlaying) {
-                    soughtOldPosition = null
-                    agent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
+                    seekedOldPosition = null
+                    agent?.playStreamOnDemand(mediaId, videoURL, getOptions(), null)
                 } else {
                     agent?.stop()
                 }
@@ -75,7 +74,7 @@ class VODFragment : BaseVideoFragment() {
                 super.onPlaybackParametersChanged(playbackParameters)
                 if (exoPlayer?.isPlaying == true) {
                     agent?.stop()
-                    agent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
+                    agent?.playStreamOnDemand(mediaId, videoURL, getOptions(), null)
                 }
             }
         })
@@ -83,6 +82,7 @@ class VODFragment : BaseVideoFragment() {
 
     override fun onStop() {
         super.onStop()
+        exoPlayer?.pause()
         agent?.flushEventStorage()
         volumeContentObserver?.let {
             requireActivity().contentResolver

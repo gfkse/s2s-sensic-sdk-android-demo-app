@@ -15,7 +15,7 @@ class VODExtensionFragment : BaseVideoFragment() {
     override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
     private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
-    private val contentIdDefault = "default"
+    private val contentId = "default"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +30,7 @@ class VODExtensionFragment : BaseVideoFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        super.prepareVideoPlayer()
+        super.prepareVodVideoPlayer()
 
         val config = S2SConfig(
             mediaId,
@@ -41,10 +41,16 @@ class VODExtensionFragment : BaseVideoFragment() {
         ExoplayerExtension(
             exoPlayer!!,
             config,
-            contentIdDefault,
+            contentId,
             hashMapOf(),
             requireContext(),
             this,
         )
     }
+
+    override fun onStop() {
+        super.onStop()
+        exoPlayer?.pause()
+    }
+
 }
