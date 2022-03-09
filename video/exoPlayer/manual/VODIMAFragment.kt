@@ -70,12 +70,15 @@ class VODIMAFragment : BaseVideoFragment() {
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
-                if (isPlaying) {
-                    soughtPosition = null
-                    if (exoPlayer?.isPlayingAd == true) {
-                        adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
-                    } else {
-                        isPostRollPlayed = exoPlayer?.contentPosition ?: 0 > exoPlayer?.duration ?: 0
+
+                when {
+                    exoPlayer?.isPlayingAd == true -> {
+                        soughtPosition = null
+                        adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", null, null)
+                    }
+                    isPlaying -> {
+                        soughtPosition = null
+                        isPostRollPlayed = exoPlayer?.contentPosition ?: 0 >= exoPlayer?.duration ?: 0
                         if (!isPostRollPlayed) {
                             contentAgent?.playStreamOnDemand(
                                 contentIdDefault,
@@ -85,10 +88,10 @@ class VODIMAFragment : BaseVideoFragment() {
                             )
                         }
                     }
-                } else {
-                    if (isPlayingAd) {
+                    isPlayingAd -> {
                         adAgent?.stop()
-                    } else {
+                    }
+                    else -> {
                         if (!isPostRollPlayed) {
                             contentAgent?.stop()
                         }
@@ -131,11 +134,7 @@ class VODIMAFragment : BaseVideoFragment() {
             object : VolumeContentObserver(requireContext(), Handler(Looper.getMainLooper())) {
                 //This function will scale current volume between [0,100]
                 override fun volumeChanged(currentVolume: Int) {
-                    if (isPlayingAd) {
-                        adAgent?.volume(currentVolume.toString())
-                    } else {
-                        contentAgent?.volume(currentVolume.toString())
-                    }
+                    if (!isPlayingAd) contentAgent?.volume(currentVolume.toString())
                 }
             }
 
