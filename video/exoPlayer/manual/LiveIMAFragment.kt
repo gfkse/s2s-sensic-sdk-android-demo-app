@@ -13,6 +13,8 @@ import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.demo.VolumeContentObserver
 import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
+import com.gfk.s2s.s2sExtension.SensicEvent
+import com.google.ads.interactivemedia.v3.api.AdEvent
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 
@@ -26,8 +28,8 @@ open class LiveIMAFragment : BaseVideoFragment() {
     private var volumeContentObserver: VolumeContentObserver? = null
     private var contentAgent: S2SAgent? = null
     private var adAgent: S2SAgent? = null
-    private var isPlayingAd = false
     var soughtPosition: Int? = null
+    var lastContentSensicEvent: SensicEvent? = SensicEvent.stop
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,8 +55,42 @@ open class LiveIMAFragment : BaseVideoFragment() {
             soughtPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
         }
 
-        exoPlayer?.addListener(object : Player.Listener {
+        var lastAdPlay = 0L
 
+        super.adEventListener = AdEvent.AdEventListener { adEvent ->
+            when (adEvent.type) {
+                AdEvent.AdEventType.STARTED -> {
+                    lastAdPlay = System.currentTimeMillis() - (exoPlayer?.currentPosition ?: 0)
+                    adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null
+                    )
+                }
+                AdEvent.AdEventType.PAUSED, AdEvent.AdEventType.SKIPPED, AdEvent.AdEventType.AD_BUFFERING -> {
+                    adAgent?.stop(System.currentTimeMillis() - lastAdPlay)
+                }
+                AdEvent.AdEventType.RESUMED -> {
+                    adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
+                    lastAdPlay <= System.currentTimeMillis() - (exoPlayer?.currentPosition ?: 0)
+                }
+                AdEvent.AdEventType.COMPLETED -> {
+                    val position = System.currentTimeMillis() - lastAdPlay
+                    adAgent?.stop(position)
+                }
+                else -> {}
+            }
+        }
+
+        contentAgent = S2SAgent(configUrl, mediaId, context)
+        adAgent = S2SAgent(configUrl, mediaId, context)
+
+        contentAgent?.setStreamPositionCallback {
+            soughtPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
+        }
+
+        adAgent?.setStreamPositionCallback {
+            (System.currentTimeMillis() - lastAdPlay).toInt()
+        }
+
+        exoPlayer?.addListener(object : Player.Listener {
             override fun onPositionDiscontinuity(
                 oldPosition: Player.PositionInfo,
                 newPosition: Player.PositionInfo,
@@ -66,48 +102,13 @@ open class LiveIMAFragment : BaseVideoFragment() {
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
+                playbackSpeedControlImageButton?.isVisible = exoPlayer?.isPlaying == false
 
-                when {
-                    exoPlayer?.isPlayingAd == true -> {
-                        soughtPosition = null
-                        adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", null, null)
-                    }
-                    isPlaying -> {
-                        contentAgent?.playStreamLive(
-                            contentIdDefault,
-                            "",
-                            0,
-                            configUrl,
-                            getOptions(),
-                            null
-                        )
-                    }
-                    isPlayingAd -> {
-                        adAgent?.stop()
-                    }
-                    else -> {
-                        contentAgent?.stop()
-                    }
-                }
-
-                isPlayingAd = exoPlayer?.isPlayingAd == true
-                playbackSpeedControlImageButton?.isVisible = !isPlayingAd
-            }
-
-            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
-                super.onPlaybackParametersChanged(playbackParameters)
-                if (exoPlayer?.isPlaying == true) {
+                if (lastContentSensicEvent != SensicEvent.play && exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
+                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL + "ads", getOptions(), null)
+                } else if (lastContentSensicEvent != SensicEvent.stop && exoPlayer?.isPlaying == false && exoPlayer?.isPlayingAd == false) {
                     contentAgent?.stop()
-                    contentAgent?.playStreamLive(
-                        contentIdDefault,
-                        "",
-                        0,
-                        configUrl,
-                        getOptions(),
-                        null
-                    )
                 }
-
             }
         })
     }
@@ -133,7 +134,7 @@ open class LiveIMAFragment : BaseVideoFragment() {
         volumeContentObserver =
             object : VolumeContentObserver(requireContext(), Handler(Looper.getMainLooper())) {
                 override fun volumeChanged(currentVolume: Int) {
-                    if (!isPlayingAd) contentAgent?.volume("" + currentVolume)
+                    if (exoPlayer?.isPlayingAd == false) contentAgent?.volume("" + currentVolume)
                 }
             }
         requireActivity().applicationContext.contentResolver

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,15 +14,8 @@ import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
 import com.gfk.s2s.s2sExtension.SensicEvent
 import com.gfk.s2s.s2sagent.S2SAgent
-import com.gfk.s2s.utils.Logger
 import com.google.ads.interactivemedia.v3.api.AdEvent
-import com.google.ads.interactivemedia.v3.api.ImaSdkFactory
-import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.Timeline
-import com.google.android.exoplayer2.TracksInfo
-import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
-import com.google.android.exoplayer2.ext.ima.ImaServerSideAdInsertionMediaSource
 
 class VODIMAFragment : BaseVideoFragment() {
     override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
@@ -34,7 +26,6 @@ class VODIMAFragment : BaseVideoFragment() {
     private var volumeContentObserver: VolumeContentObserver? = null
     private var contentAgent: S2SAgent? = null
     private var adAgent: S2SAgent? = null
-    private var isPlayingAd = false
     var lastContentSensicEvent: SensicEvent? = SensicEvent.stop
     var soughtPosition: Int? = null
 
@@ -69,7 +60,7 @@ class VODIMAFragment : BaseVideoFragment() {
                 }
                 AdEvent.AdEventType.RESUMED -> {
                     adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
-                    lastAdPlay = System.currentTimeMillis() - (exoPlayer?.currentPosition ?: 0)
+                    lastAdPlay <= System.currentTimeMillis() - (exoPlayer?.currentPosition ?: 0)
                 }
                 AdEvent.AdEventType.COMPLETED -> {
                     val position = System.currentTimeMillis() - lastAdPlay
@@ -134,7 +125,7 @@ class VODIMAFragment : BaseVideoFragment() {
             object : VolumeContentObserver(requireContext(), Handler(Looper.getMainLooper())) {
                 //This function will scale current volume between [0,100]
                 override fun volumeChanged(currentVolume: Int) {
-                    if (!isPlayingAd) contentAgent?.volume(currentVolume.toString())
+                    if (exoPlayer?.isPlayingAd == false) contentAgent?.volume(currentVolume.toString())
                 }
             }
 
