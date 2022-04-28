@@ -18,9 +18,10 @@ import com.google.android.exoplayer2.Player
 
 open class LiveFragment : BaseVideoFragment() {
 
-    override val videoURL = "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"
+    override val videoURL = "https://mcdn.daserste.de/daserste/de/master.m3u8"
     private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
+    private val contentIdDefault = "default"
     private var volumeContentObserver: VolumeContentObserver? = null
     private var agent: S2SAgent? = null
 
@@ -37,11 +38,10 @@ open class LiveFragment : BaseVideoFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        super.prepareLiveVideoPlayer()
+        prepareVideoPlayer()
         addVolumeObserver()
 
         agent = S2SAgent(configUrl, mediaId, context)
-
         exoPlayer?.addListener(object : Player.Listener {
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -49,7 +49,7 @@ open class LiveFragment : BaseVideoFragment() {
 
                 if (isPlaying) {
                     agent?.playStreamLive(
-                        mediaId,
+                        contentIdDefault,
                         "",
                         0,
                         configUrl,
@@ -66,7 +66,7 @@ open class LiveFragment : BaseVideoFragment() {
                 if (exoPlayer?.isPlaying == true) {
                     agent?.stop()
                     agent?.playStreamLive(
-                        mediaId,
+                        contentIdDefault,
                         "",
                         0,
                         configUrl,
@@ -81,7 +81,6 @@ open class LiveFragment : BaseVideoFragment() {
 
     override fun onStop() {
         super.onStop()
-        exoPlayer?.pause()
         agent?.flushEventStorage()
         volumeContentObserver?.let {
             requireActivity().contentResolver

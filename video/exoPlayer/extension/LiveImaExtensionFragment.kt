@@ -10,12 +10,12 @@ import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
 import com.gfk.s2s.exoplayer.ExoplayerExtension
 import com.gfk.s2s.s2sagent.S2SConfig
 
-open class LiveExtensionFragment : BaseVideoFragment() {
+class LiveImaExtensionFragment : BaseVideoFragment() {
 
     override val videoURL = "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"
     private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
-    private val contentIdDefault = "default"
+    private val contentId = "default"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,13 +23,14 @@ open class LiveExtensionFragment : BaseVideoFragment() {
         savedInstanceState: Bundle?
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
-            getString(R.string.fragment_title_live)
+            getString(R.string.fragment_title_live_ima)
         return inflater.inflate(R.layout.video_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        adURL = getString(R.string.ad_pre_roll_linear_skippable)
         super.prepareVideoPlayer()
 
         val config = S2SConfig(
@@ -38,13 +39,16 @@ open class LiveExtensionFragment : BaseVideoFragment() {
             true,
             null
         )
-        ExoplayerExtension(
+
+        val extension = ExoplayerExtension(
             exoPlayer!!,
             config,
-            contentIdDefault,
+            contentId,
             hashMapOf(),
             requireContext(),
             this,
         )
+
+        extension.activateNativeAdSupport()
     }
 }

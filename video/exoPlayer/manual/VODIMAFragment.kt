@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,9 +13,17 @@ import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.VolumeContentObserver
 import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
+import com.gfk.s2s.s2sExtension.SensicEvent
 import com.gfk.s2s.s2sagent.S2SAgent
+import com.gfk.s2s.utils.Logger
+import com.google.ads.interactivemedia.v3.api.AdEvent
+import com.google.ads.interactivemedia.v3.api.ImaSdkFactory
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.Timeline
+import com.google.android.exoplayer2.TracksInfo
+import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
+import com.google.android.exoplayer2.ext.ima.ImaServerSideAdInsertionMediaSource
 
 class VODIMAFragment : BaseVideoFragment() {
     override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
@@ -26,7 +35,7 @@ class VODIMAFragment : BaseVideoFragment() {
     private var contentAgent: S2SAgent? = null
     private var adAgent: S2SAgent? = null
     private var isPlayingAd = false
-    private var isPostRollPlayed = false
+    var lastContentSensicEvent: SensicEvent? = SensicEvent.stop
     var soughtPosition: Int? = null
 
     override fun onCreateView(
@@ -46,6 +55,30 @@ class VODIMAFragment : BaseVideoFragment() {
         prepareVideoPlayer()
         addVolumeObserver()
 
+        var lastAdPlay = 0L
+
+        super.adEventListener = AdEvent.AdEventListener { adEvent ->
+            when (adEvent.type) {
+                AdEvent.AdEventType.STARTED -> {
+                    lastAdPlay = System.currentTimeMillis() - (exoPlayer?.currentPosition ?: 0)
+                    adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null
+                    )
+                }
+                AdEvent.AdEventType.PAUSED, AdEvent.AdEventType.SKIPPED, AdEvent.AdEventType.AD_BUFFERING -> {
+                    adAgent?.stop(System.currentTimeMillis() - lastAdPlay)
+                }
+                AdEvent.AdEventType.RESUMED -> {
+                    adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
+                    lastAdPlay = System.currentTimeMillis() - (exoPlayer?.currentPosition ?: 0)
+                }
+                AdEvent.AdEventType.COMPLETED -> {
+                    val position = System.currentTimeMillis() - lastAdPlay
+                    adAgent?.stop(position)
+                }
+                else -> {}
+            }
+        }
+
         contentAgent = S2SAgent(configUrl, mediaId, context)
         adAgent = S2SAgent(configUrl, mediaId, context)
 
@@ -54,11 +87,10 @@ class VODIMAFragment : BaseVideoFragment() {
         }
 
         adAgent?.setStreamPositionCallback {
-            soughtPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
+            (System.currentTimeMillis() - lastAdPlay).toInt()
         }
 
         exoPlayer?.addListener(object : Player.Listener {
-
             override fun onPositionDiscontinuity(
                 oldPosition: Player.PositionInfo,
                 newPosition: Player.PositionInfo,
@@ -70,44 +102,12 @@ class VODIMAFragment : BaseVideoFragment() {
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
+                playbackSpeedControlImageButton?.isVisible = exoPlayer?.isPlaying == false
 
-                when {
-                    exoPlayer?.isPlayingAd == true -> {
-                        soughtPosition = null
-                        adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", null, null)
-                    }
-                    isPlaying -> {
-                        soughtPosition = null
-                        isPostRollPlayed = exoPlayer?.contentPosition ?: 0 >= exoPlayer?.duration ?: 0
-                        if (!isPostRollPlayed) {
-                            contentAgent?.playStreamOnDemand(
-                                contentIdDefault,
-                                videoURL,
-                                getOptions(),
-                                null
-                            )
-                        }
-                    }
-                    isPlayingAd -> {
-                        adAgent?.stop()
-                    }
-                    else -> {
-                        if (!isPostRollPlayed) {
-                            contentAgent?.stop()
-                        }
-                        isPostRollPlayed = false
-                    }
-                }
-
-                isPlayingAd = exoPlayer?.isPlayingAd == true
-                playbackSpeedControlImageButton?.isVisible = !isPlayingAd
-            }
-
-            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
-                super.onPlaybackParametersChanged(playbackParameters)
-                if (exoPlayer?.isPlaying == true) {
+                if (lastContentSensicEvent != SensicEvent.play && exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
+                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL + "ads", getOptions(), null)
+                } else if (lastContentSensicEvent != SensicEvent.stop && exoPlayer?.isPlaying == false && exoPlayer?.isPlayingAd == false) {
                     contentAgent?.stop()
-                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
                 }
             }
         })

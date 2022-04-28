@@ -1,7 +1,5 @@
 package com.gfk.s2s.demo.video.exoPlayer
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
@@ -13,16 +11,20 @@ import android.widget.ImageButton
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.gfk.s2s.demo.BaseFragment
-import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.s2s.R
-import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.source.BaseMediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DataSource
+import com.gfk.s2s.utils.Logger
+import com.google.ads.interactivemedia.v3.api.AdEvent
+import com.google.ads.interactivemedia.v3.api.player.AdMediaInfo
+import com.google.ads.interactivemedia.v3.api.player.VideoAdPlayer
+import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackParameters
+import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
+import com.google.android.exoplayer2.ext.ima.ImaServerSideAdInsertionMediaSource
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 
 /**
@@ -32,92 +34,110 @@ import com.google.android.exoplayer2.util.Util
  */
 
 open class BaseVideoFragment : BaseFragment() {
+    private var playerView: StyledPlayerView? = null
     var exoPlayer: ExoPlayer? = null
+    var adsLoader: ImaAdsLoader? = null
     var playbackSpeedControlImageButton: ImageButton? = null
     open val videoURL = ""
-    var playerPosition = 0L
-    lateinit var preferences: SharedPreferences
+    open var adURL = ""
+    var savedPlayerPosition = 0L
+    private var serverSideAdsLoader: ImaServerSideAdInsertionMediaSource.AdsLoader? = null
+    open var adEventListener: AdEvent.AdEventListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        preferences = requireContext().getSharedPreferences("Settings", Context.MODE_PRIVATE)
+        playerView = view.findViewById(R.id.player_view)
+        playbackSpeedControlImageButton =
+            view.findViewById(R.id.playback_speed_control_image_button)
+
+        // initialize adsloader with AdEventListener.
+        val adsLoaderBuilder =
+            ImaAdsLoader.Builder(requireContext()).setAdEventListener { adEvent ->
+                adEventListener?.onAdEvent(adEvent)
+            }
+        adsLoader = adsLoaderBuilder.build()
     }
 
-    fun prepareVodVideoPlayer() =
-        prepareVideoPlayer {
-            val userAgent = Util.getUserAgent(
-                requireContext(), context?.getString(R.string.app_name)
-                    ?: ""
+    fun prepareVideoPlayer() {
+        val mediaSourceFactory: DefaultMediaSourceFactory = createMediaSourceFactory()
+        val contentUri = Uri.parse(videoURL)
+        val mediaItemBuild = MediaItem.Builder().setUri(contentUri);
+
+        if (adURL.isEmpty()) {
+            exoPlayer =
+                ExoPlayer.Builder(requireContext()).setMediaSourceFactory(mediaSourceFactory)
+                    .build()
+        } else {
+            mediaSourceFactory.setAdsLoaderProvider { adsLoader }
+                .setAdViewProvider(playerView)
+            mediaItemBuild.setAdsConfiguration(
+                MediaItem.AdsConfiguration.Builder(Uri.parse(adURL)).build()
             )
-            ProgressiveMediaSource.Factory(
-                DefaultDataSourceFactory(
-                    requireContext(),
-                    userAgent
-                )
-            ).createMediaSource(Uri.parse(videoURL))
+            exoPlayer =
+                ExoPlayer.Builder(requireContext()).setMediaSourceFactory(mediaSourceFactory)
+                    .build()
+            serverSideAdsLoader!!.setPlayer(exoPlayer!!)
+            adsLoader?.setPlayer(exoPlayer)
         }
 
-    fun prepareLiveVideoPlayer() =
-        prepareVideoPlayer {
-            val dataSourceFactory: DataSource.Factory = DefaultHttpDataSourceFactory(
-                Util.getUserAgent(requireContext(), getString(R.string.app_name))
-            )
+        playerView?.player = exoPlayer
+        exoPlayer?.setMediaItem(mediaItemBuild.build())
+        exoPlayer?.prepare()
 
-            HlsMediaSource.Factory(dataSourceFactory).createMediaSource(
-                Uri.parse(videoURL)
-            )
-        }
-
-    private fun prepareVideoPlayer(mediaSourceProvider: () -> BaseMediaSource) {
-        exoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
-        view?.findViewById<PlayerView>(R.id.videoView)?.player = exoPlayer
-
-        playbackSpeedControlImageButton =
-            view?.findViewById(R.id.playback_speed_control_image_button)
-        playbackSpeedControlImageButton?.setOnClickListener { showPlayerSpeedDialog() }
-
-        exoPlayer?.prepare(mediaSourceProvider())
-        exoPlayer?.seekTo(playerPosition)
+        // Set PlayWhenReady. If true, content and ads will autoplay.
         exoPlayer?.playWhenReady = true
+    }
+
+    /**
+     *  Creates the MediaSourceFactory for the Exoplayer.
+     *  If adURL is set, it also creates ImaServerSideAdInsertionMediaSource.
+     */
+    private fun createMediaSourceFactory(): DefaultMediaSourceFactory {
+        val defaultDataSourceFactory =
+            DefaultDataSourceFactory(requireContext(), Util.getUserAgent(requireContext(), "app"))
+        val mediaSourceFactory = DefaultMediaSourceFactory(defaultDataSourceFactory);
+
+        if (adURL.isEmpty()) {
+            return mediaSourceFactory
+        }
+
+        val serverSideAdLoaderBuilder =
+            ImaServerSideAdInsertionMediaSource.AdsLoader.Builder(requireContext(),
+                playerView!!
+            )
+        serverSideAdsLoader = serverSideAdLoaderBuilder.build()
+        val imaServerSideAdInsertionMediaSourceFactory =
+            ImaServerSideAdInsertionMediaSource.Factory(
+                serverSideAdsLoader!!, mediaSourceFactory
+            )
+
+        return mediaSourceFactory.setAdsLoaderProvider { adsLoader }
+            .setAdViewProvider(playerView)
+            .setServerSideAdInsertionMediaSourceFactory(imaServerSideAdInsertionMediaSourceFactory)
     }
 
     override fun onResume() {
         super.onResume()
-        (activity as? MainActivity)?.usePictureInPictureByHomeButtonPress = true
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
             activity?.packageManager?.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) == true
+            && activity?.isInPictureInPictureMode == true
         ) {
-            if (activity?.isInPictureInPictureMode == false) {
-                exoPlayer?.playWhenReady = true
-            }
-        } else {
-            exoPlayer?.playWhenReady = true
+            return
         }
+        exoPlayer?.playWhenReady = true
     }
 
     override fun onPause() {
         super.onPause()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
             activity?.packageManager?.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) == true
+            && activity?.isInPictureInPictureMode == true
         ) {
-            if (activity?.isInPictureInPictureMode == false) {
-                playerPosition = exoPlayer?.currentPosition ?: 0
-                exoPlayer?.playWhenReady = false
-            }
-        } else {
-            playerPosition = exoPlayer?.currentPosition ?: 0
-            exoPlayer?.playWhenReady = false
+            return
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putLong("playerPosition", playerPosition);
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        playerPosition = savedInstanceState?.getLong("playerPosition") ?: 0
+        savedPlayerPosition = exoPlayer?.currentPosition ?: 0
+        exoPlayer?.playWhenReady = false
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -149,6 +169,17 @@ open class BaseVideoFragment : BaseFragment() {
         popupMenu.show()
     }
 
-    private fun changePlaybackSpeed(speed: Float) =
-        exoPlayer?.setPlaybackParameters(PlaybackParameters(speed))
+    private fun changePlaybackSpeed(speed: Float): Unit? {
+        return exoPlayer?.setPlaybackParameters(PlaybackParameters(speed))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        exoPlayer?.playWhenReady = false
+    }
+
+    override fun onDestroy() {
+        adsLoader?.release()
+        super.onDestroy()
+    }
 }
