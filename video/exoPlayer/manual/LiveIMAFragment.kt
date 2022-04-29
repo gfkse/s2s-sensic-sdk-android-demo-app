@@ -52,38 +52,45 @@ open class LiveIMAFragment : BaseVideoFragment() {
         adAgent = S2SAgent(configUrl, mediaId, context)
 
         var lastAdPlay = 0L
+        var adPosition = 0L
 
         super.adEventListener = AdEvent.AdEventListener { adEvent ->
             when (adEvent.type) {
                 AdEvent.AdEventType.STARTED -> {
-                    lastAdPlay = System.currentTimeMillis() - (exoPlayer?.currentPosition ?: 0)
-                    adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null
-                    )
+                    if (lastContentSensicEvent == SensicEvent.play) {
+                        lastContentSensicEvent = SensicEvent.stop
+                        contentAgent?.stop()
+                    }
+                    lastAdPlay = System.currentTimeMillis();
+                    adPosition = 0;
+                    adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
                 }
                 AdEvent.AdEventType.PAUSED, AdEvent.AdEventType.SKIPPED, AdEvent.AdEventType.AD_BUFFERING -> {
-                    adAgent?.stop(System.currentTimeMillis() - lastAdPlay)
+                    adPosition = System.currentTimeMillis() - lastAdPlay
+                    adAgent?.stop(adPosition)
                 }
                 AdEvent.AdEventType.RESUMED -> {
+                    lastAdPlay = System.currentTimeMillis()
                     adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
-                    lastAdPlay <= System.currentTimeMillis() - (exoPlayer?.currentPosition ?: 0)
                 }
                 AdEvent.AdEventType.COMPLETED -> {
-                    val position = System.currentTimeMillis() - lastAdPlay
-                    adAgent?.stop(position)
+                    adPosition = if (adEvent != null && adEvent.ad != null) {
+                        adEvent.ad.duration.toLong() * 1000
+                    } else {
+                        System.currentTimeMillis() - lastAdPlay
+                    }
+                    adAgent?.stop(adPosition)
                 }
                 else -> {}
             }
         }
-
-        contentAgent = S2SAgent(configUrl, mediaId, context)
-        adAgent = S2SAgent(configUrl, mediaId, context)
 
         contentAgent?.setStreamPositionCallback {
             soughtPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
         }
 
         adAgent?.setStreamPositionCallback {
-            (System.currentTimeMillis() - lastAdPlay).toInt()
+            adPosition.toInt()
         }
 
         exoPlayer?.addListener(object : Player.Listener {
@@ -102,8 +109,10 @@ open class LiveIMAFragment : BaseVideoFragment() {
 
                 if (lastContentSensicEvent != SensicEvent.play && exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
                     soughtPosition = null
-                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL + "content", getOptions(), null)
+                    lastContentSensicEvent = SensicEvent.play;
+                    contentAgent?.playStreamLive(contentIdDefault, "", 0, configUrl, getOptions(), null)
                 } else if (lastContentSensicEvent != SensicEvent.stop && exoPlayer?.isPlaying == false && exoPlayer?.isPlayingAd == false) {
+                    lastContentSensicEvent = SensicEvent.stop;
                     contentAgent?.stop()
                 }
             }
@@ -112,7 +121,8 @@ open class LiveIMAFragment : BaseVideoFragment() {
                 super.onPlaybackParametersChanged(playbackParameters)
                 if (exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
                     contentAgent?.stop()
-                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
+                    lastContentSensicEvent = SensicEvent.play;
+                    contentAgent?.playStreamLive(contentIdDefault, "", 0, configUrl, getOptions(), null)
                 }
             }
         })
