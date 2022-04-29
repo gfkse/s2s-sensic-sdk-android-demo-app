@@ -15,6 +15,7 @@ import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
 import com.gfk.s2s.s2sExtension.SensicEvent
 import com.gfk.s2s.s2sagent.S2SAgent
 import com.google.ads.interactivemedia.v3.api.AdEvent
+import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 
 class VODIMAFragment : BaseVideoFragment() {
@@ -96,9 +97,17 @@ class VODIMAFragment : BaseVideoFragment() {
                 playbackSpeedControlImageButton?.isVisible = exoPlayer?.isPlaying == false
 
                 if (lastContentSensicEvent != SensicEvent.play && exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
+                    soughtPosition = null
                     contentAgent?.playStreamOnDemand(contentIdDefault, videoURL + "ads", getOptions(), null)
                 } else if (lastContentSensicEvent != SensicEvent.stop && exoPlayer?.isPlaying == false && exoPlayer?.isPlayingAd == false) {
                     contentAgent?.stop()
+                }
+            }
+            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+                super.onPlaybackParametersChanged(playbackParameters)
+                if (exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
+                    contentAgent?.stop()
+                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
                 }
             }
         })

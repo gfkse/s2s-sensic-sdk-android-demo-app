@@ -51,10 +51,6 @@ open class LiveIMAFragment : BaseVideoFragment() {
         contentAgent = S2SAgent(configUrl, mediaId, context)
         adAgent = S2SAgent(configUrl, mediaId, context)
 
-        adAgent?.setStreamPositionCallback {
-            soughtPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
-        }
-
         var lastAdPlay = 0L
 
         super.adEventListener = AdEvent.AdEventListener { adEvent ->
@@ -105,9 +101,18 @@ open class LiveIMAFragment : BaseVideoFragment() {
                 playbackSpeedControlImageButton?.isVisible = exoPlayer?.isPlaying == false
 
                 if (lastContentSensicEvent != SensicEvent.play && exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
+                    soughtPosition = null
                     contentAgent?.playStreamOnDemand(contentIdDefault, videoURL + "ads", getOptions(), null)
                 } else if (lastContentSensicEvent != SensicEvent.stop && exoPlayer?.isPlaying == false && exoPlayer?.isPlayingAd == false) {
                     contentAgent?.stop()
+                }
+            }
+
+            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+                super.onPlaybackParametersChanged(playbackParameters)
+                if (exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
+                    contentAgent?.stop()
+                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
                 }
             }
         })
