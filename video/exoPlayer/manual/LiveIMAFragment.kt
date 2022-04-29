@@ -102,7 +102,7 @@ open class LiveIMAFragment : BaseVideoFragment() {
 
                 if (lastContentSensicEvent != SensicEvent.play && exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
                     soughtPosition = null
-                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL + "ads", getOptions(), null)
+                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL + "content", getOptions(), null)
                 } else if (lastContentSensicEvent != SensicEvent.stop && exoPlayer?.isPlaying == false && exoPlayer?.isPlayingAd == false) {
                     contentAgent?.stop()
                 }
