@@ -110,8 +110,12 @@ class VODIMAFragment : BaseVideoFragment() {
 
                 if (lastContentSensicEvent != SensicEvent.play && exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
                     soughtPosition = null
+                    val remainingDuration = (exoPlayer?.duration ?: 0) - (exoPlayer?.currentPosition ?: 0)
+                    if (remainingDuration < 10) {
+                        return
+                    }
                     lastContentSensicEvent = SensicEvent.play;
-                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL + "content", getOptions(), null)
+                    contentAgent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
                 } else if (lastContentSensicEvent != SensicEvent.stop && exoPlayer?.isPlaying == false && exoPlayer?.isPlayingAd == false) {
                     lastContentSensicEvent = SensicEvent.stop;
                     contentAgent?.stop()
