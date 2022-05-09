@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
@@ -38,6 +39,7 @@ class VODExtensionFragment : BaseVideoFragment() {
             true,
             null
         )
+
         ExoplayerExtension(
             exoPlayer!!,
             config,

@@ -63,6 +63,11 @@ open class BaseVideoFragment : BaseFragment() {
         val contentUri = Uri.parse(videoURL)
         val mediaItemBuild = MediaItem.Builder().setUri(contentUri);
 
+        if (exoPlayer != null) {
+            exoPlayer?.stop();
+            exoPlayer?.release();
+        }
+
         if (adURL.isEmpty()) {
             exoPlayer =
                 ExoPlayer.Builder(requireContext()).setMediaSourceFactory(mediaSourceFactory)
@@ -180,6 +185,12 @@ open class BaseVideoFragment : BaseFragment() {
 
     override fun onDestroy() {
         adsLoader?.release()
+
+        if (exoPlayer != null) {
+            exoPlayer?.stop();
+            exoPlayer?.release();
+            exoPlayer = null;
+        }
         super.onDestroy()
     }
 }
