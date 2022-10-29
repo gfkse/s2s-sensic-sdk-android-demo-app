@@ -3,16 +3,29 @@ package com.gfk.s2s.demo
 import android.app.PictureInPictureParams
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.net.http.HttpResponseCache
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.multidex.MultiDex
 import com.gfk.s2s.demo.s2s.R
+import com.gfk.s2s.utils.Logger
+import java.io.File
+import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     var usePictureInPictureByHomeButtonPress = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        try {
+            val httpCacheDir: File = File(cacheDir, "http")
+            val httpCacheSize = (10 * 1024 * 1024).toLong() // 10 MiB
+            HttpResponseCache.install(httpCacheDir, httpCacheSize)
+            Logger.logD("HTTP response cache installed")
+        } catch (e: IOException) {
+            Logger.logD("HTTP response cache installation failed:$e")
+        }
         setContentView(R.layout.activity_main)
         MultiDex.install(this)
         val actionBar = findViewById<Toolbar>(R.id.toolBar)
