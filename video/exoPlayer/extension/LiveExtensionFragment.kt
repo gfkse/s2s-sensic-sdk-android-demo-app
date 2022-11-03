@@ -38,6 +38,7 @@ open class LiveExtensionFragment : BaseVideoFragment() {
             true,
             null
         )
+
         ExoplayerExtension(
             exoPlayer!!,
             config,
