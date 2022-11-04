@@ -52,7 +52,7 @@ open class LiveFragment : BaseVideoFragment() {
                         contentIdDefault,
                         "",
                         0,
-                        configUrl,
+                        videoURL,
                         getOptions(),
                         null
                     )
@@ -69,7 +69,7 @@ open class LiveFragment : BaseVideoFragment() {
                         contentIdDefault,
                         "",
                         0,
-                        configUrl,
+                        videoURL,
                         getOptions(),
                         null
                     )
