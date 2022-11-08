@@ -110,7 +110,7 @@ open class LiveIMAFragment : BaseVideoFragment() {
                 if (lastContentSensicEvent != SensicEvent.play && exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
                     soughtPosition = null
                     lastContentSensicEvent = SensicEvent.play;
-                    contentAgent?.playStreamLive(contentIdDefault, "", 0, videoURL, getOptions(), null)
+                    contentAgent?.playStreamLive(contentIdDefault, "", 0, configUrl, getOptions(), null)
                 } else if (lastContentSensicEvent != SensicEvent.stop && exoPlayer?.isPlaying == false && exoPlayer?.isPlayingAd == false) {
                     lastContentSensicEvent = SensicEvent.stop;
                     contentAgent?.stop()
@@ -122,7 +122,7 @@ open class LiveIMAFragment : BaseVideoFragment() {
                 if (exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
                     contentAgent?.stop()
                     lastContentSensicEvent = SensicEvent.play;
-                    contentAgent?.playStreamLive(contentIdDefault, "", 0, videoURL, getOptions(), null)
+                    contentAgent?.playStreamLive(contentIdDefault, "", 0, configUrl, getOptions(), null)
                 }
             }
         })
