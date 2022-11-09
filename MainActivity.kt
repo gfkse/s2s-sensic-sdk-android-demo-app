@@ -23,10 +23,12 @@ class MainActivity : AppCompatActivity() {
             val httpCacheDir: File = File(cacheDir, "http")
             val httpCacheSize = (10 * 1024 * 1024).toLong() // 10 MiB
             HttpResponseCache.install(httpCacheDir, httpCacheSize)
+
             Logger.logD("HTTP response cache installed")
         } catch (e: IOException) {
             Logger.logD("HTTP response cache installation failed:$e")
         }
+
         setContentView(R.layout.activity_main)
         MultiDex.install(this)
         val actionBar = findViewById<Toolbar>(R.id.toolBar)
