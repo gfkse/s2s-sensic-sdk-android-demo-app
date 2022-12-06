@@ -1,5 +1,6 @@
 package com.gfk.s2s.demo
 
+import android.annotation.SuppressLint
 import android.app.PictureInPictureParams
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -13,6 +14,7 @@ class MainActivity : AppCompatActivity() {
     var usePictureInPictureByHomeButtonPress = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
         MultiDex.install(this)
         val actionBar = findViewById<Toolbar>(R.id.toolBar)
@@ -22,9 +24,11 @@ class MainActivity : AppCompatActivity() {
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
         if (usePictureInPictureByHomeButtonPress) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N && packageManager?.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) == true) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N
+                && packageManager?.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) == true) {
                 enterPictureInPictureMode()
-            } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O && packageManager?.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) == true) {
+            } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O
+                && packageManager?.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) == true) {
                 enterPictureInPictureMode(PictureInPictureParams.Builder().build())
             }
         }
@@ -38,6 +42,8 @@ class MainActivity : AppCompatActivity() {
             supportActionBar?.show()
         }
     }
+
+    @SuppressLint("MissingSuperCall")
     override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
         if (isInPictureInPictureMode) {
