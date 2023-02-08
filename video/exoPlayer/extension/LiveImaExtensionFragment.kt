@@ -13,7 +13,7 @@ import com.gfk.s2s.s2sagent.S2SConfig
 class LiveImaExtensionFragment : BaseVideoFragment() {
 
     override val videoURL = "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"
-    private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
+    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
     private val contentId = "default"
 

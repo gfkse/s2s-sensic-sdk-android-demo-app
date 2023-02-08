@@ -19,7 +19,7 @@ import com.google.android.exoplayer2.Player
 open class LiveFragment : BaseVideoFragment() {
 
     override val videoURL = "https://mcdn.daserste.de/daserste/de/master.m3u8"
-    private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
+    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
     private val contentIdDefault = "default"
     private var volumeContentObserver: VolumeContentObserver? = null

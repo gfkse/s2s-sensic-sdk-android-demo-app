@@ -14,7 +14,7 @@ import com.gfk.s2s.s2sagent.S2SConfig
 class VODExtensionFragment : BaseVideoFragment() {
 
     override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
-    private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
+    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
     private val contentIdDefault = "default"
 

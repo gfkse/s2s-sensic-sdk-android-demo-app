@@ -21,7 +21,7 @@ import com.google.android.exoplayer2.Player
 
 open class LiveIMAFragment : BaseVideoFragment() {
     override val videoURL = "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"
-    private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
+    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
     private val contentIdDefault = "default"
     private val contentIdAd = "ad"

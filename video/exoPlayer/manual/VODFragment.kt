@@ -18,7 +18,7 @@ import com.google.android.exoplayer2.Player
 
 class VODFragment : BaseVideoFragment() {
     override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
-    private val configUrl = "https://demo-config-preproduction.sensic.net/s2s-android.json"
+    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
     private val contentIdDefault = "default"
     private var volumeContentObserver: VolumeContentObserver? = null
