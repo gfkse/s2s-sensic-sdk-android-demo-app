@@ -32,7 +32,7 @@ open class LiveFragment : BaseVideoFragment() {
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
             getString(R.string.fragment_title_live)
-        return inflater.inflate(R.layout.video_fragment, container, false)
+        return inflater.inflate(R.layout.exoplayer_video_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

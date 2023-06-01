@@ -8,16 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gfk.s2s.demo.MainActivity
-import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.demo.VolumeContentObserver
-import com.gfk.s2s.s2sagent.S2SAgent
+import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
+import com.gfk.s2s.s2sagent.S2SAgent
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 
+open class LiveTimeshiftedFragment : BaseVideoFragment() {
 
-class VODFragment : BaseVideoFragment() {
-    override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
+    override val videoURL = "https://mcdn.daserste.de/daserste/de/master.m3u8"
     private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
     private val contentIdDefault = "default"
@@ -30,42 +30,32 @@ class VODFragment : BaseVideoFragment() {
         savedInstanceState: Bundle?
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
-            getString(R.string.fragment_title_vod)
-        return inflater.inflate(R.layout.exoplayer_video_fragment, container, false)
+            getString(R.string.fragment_title_live_timeshifted)
+        return inflater.inflate(R.layout.exoplayer_video_fragment_timeshifted, container, false)
     }
-
-    var soughtOldPosition: Int? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         prepareVideoPlayer()
         addVolumeObserver()
+        prepareStreamStartInput(view)
 
         agent = S2SAgent(configUrl, mediaId, context)
-
-        agent?.setStreamPositionCallback {
-            soughtOldPosition ?: (exoPlayer?.currentPosition ?: 0).toInt()
-        }
-
         exoPlayer?.addListener(object : Player.Listener {
-
-            override fun onPositionDiscontinuity(
-                oldPosition: Player.PositionInfo,
-                newPosition: Player.PositionInfo,
-                reason: Int
-            ) {
-                super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-                soughtOldPosition = oldPosition.positionMs.toInt()
-
-            }
-
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
                 if (isPlaying) {
-                    soughtOldPosition = null
-                    agent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
+                    val offset: Int = exoPlayer?.duration?.minus(exoPlayer?.currentPosition!!)?.toInt() ?: 0
+                    agent?.playStreamLive(
+                        contentIdDefault,
+                        getStreamStart(),
+                        offset,
+                        videoURL,
+                        getOptions(),
+                        null
+                    )
                 } else {
                     agent?.stop()
                 }
@@ -74,9 +64,18 @@ class VODFragment : BaseVideoFragment() {
             override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
                 super.onPlaybackParametersChanged(playbackParameters)
                 if (exoPlayer?.isPlaying == true) {
+                    val offset: Int = exoPlayer?.duration?.minus(exoPlayer?.currentPosition!!)?.toInt() ?: 0
                     agent?.stop()
-                    agent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
+                    agent?.playStreamLive(
+                        contentIdDefault,
+                        getStreamStart(),
+                        offset,
+                        videoURL,
+                        getOptions(),
+                        null
+                    )
                 }
+
             }
         })
     }
@@ -96,16 +95,17 @@ class VODFragment : BaseVideoFragment() {
         "speed" to (exoPlayer?.playbackParameters?.speed?.toString() ?: "1.0")
     )
 
+
     private fun addVolumeObserver() {
         volumeContentObserver =
             object : VolumeContentObserver(requireContext(), Handler(Looper.getMainLooper())) {
-                //This function will scale current volume between [0,100]
                 override fun volumeChanged(currentVolume: Int) {
-                    agent?.volume(currentVolume.toString())
+                    agent?.volume("" + currentVolume)
                 }
             }
-
         requireActivity().applicationContext.contentResolver
             .registerContentObserver(Settings.System.CONTENT_URI, true, volumeContentObserver!!)
     }
+
+
 }

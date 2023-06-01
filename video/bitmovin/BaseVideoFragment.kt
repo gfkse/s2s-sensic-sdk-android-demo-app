@@ -1,32 +1,28 @@
-package com.gfk.s2s.demo.video.exoPlayer
+package com.gfk.s2s.demo.video.bitmovin
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageButton
-import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.bitmovin.player.PlayerView
+import com.bitmovin.player.api.Player
+import com.bitmovin.player.api.PlayerConfig
+import com.bitmovin.player.api.advertising.AdItem
+import com.bitmovin.player.api.advertising.AdSource
+import com.bitmovin.player.api.advertising.AdSourceType
+import com.bitmovin.player.api.advertising.AdvertisingConfig
+import com.bitmovin.player.api.source.SourceConfig
 import com.gfk.s2s.demo.BaseFragment
 import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.exoplayer.ExoplayerExtension
+import com.gfk.s2s.bitmovinplayer.BitmovinplayerExtension
 import com.gfk.s2s.s2sExtension.ContentMetadata
-import com.google.ads.interactivemedia.v3.api.AdEvent
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackParameters
-import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
-import com.google.android.exoplayer2.ext.ima.ImaServerSideAdInsertionMediaSource
-import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
-import com.google.android.exoplayer2.ui.StyledPlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
 import java.util.*
 
 /**
@@ -36,93 +32,55 @@ import java.util.*
  */
 
 open class BaseVideoFragment : BaseFragment() {
-    private var playerView: StyledPlayerView? = null
-    var exoPlayer: ExoPlayer? = null
-    var adsLoader: ImaAdsLoader? = null
-    var playbackSpeedControlImageButton: ImageButton? = null
+    private var playerView: PlayerView? = null
+    protected var player: Player? = null
     open val videoURL = ""
-    open var adURL = ""
-    var savedPlayerPosition = 0L
-    private var serverSideAdsLoader: ImaServerSideAdInsertionMediaSource.AdsLoader? = null
-    open var adEventListener: AdEvent.AdEventListener? = null
     private var selectedStreamStartDate: String = ""
     private var selectedStreamStartTime: String = ""
-    protected var extension: ExoplayerExtension? = null
+    protected var extension: BitmovinplayerExtension? = null
+
+    protected var adSourcePreRoll: String? = null
+    protected var adSourceMidRoll: String? = null
+    protected var adSourcePostRoll: String? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playerView = view.findViewById(R.id.player_view)
-        playbackSpeedControlImageButton =
-            view.findViewById(R.id.playback_speed_control_image_button)
-
-        // initialize adsloader with AdEventListener.
-        val adsLoaderBuilder =
-            ImaAdsLoader.Builder(requireContext()).setAdEventListener { adEvent ->
-                adEventListener?.onAdEvent(adEvent)
-            }
-        adsLoader = adsLoaderBuilder.build()
     }
 
-    fun prepareVideoPlayer() {
-        val mediaSourceFactory: DefaultMediaSourceFactory = createMediaSourceFactory()
-        val contentUri = Uri.parse(videoURL)
-        val mediaItemBuild = MediaItem.Builder().setUri(contentUri)
+    protected fun prepareVideoPlayer() {
+        val playerConfig = playerConfig()
+        player = Player.create(this.requireContext(), playerConfig)
+        playerView?.player = player
+        player?.load(SourceConfig.fromUrl(videoURL))
+    }
 
-        if (exoPlayer != null) {
-            exoPlayer?.stop()
-            exoPlayer?.release()
-        }
+    protected open fun playerConfig(): PlayerConfig{
+        val playerConfig = PlayerConfig()
 
-        if (adURL.isEmpty()) {
-            exoPlayer =
-                ExoPlayer.Builder(requireContext()).setMediaSourceFactory(mediaSourceFactory)
-                    .build()
+        if(adSourcePreRoll != null && adSourceMidRoll == null) {
+            val firstAdSource = AdSource(AdSourceType.Ima, adSourcePreRoll!!)
+            val preRoll = AdItem("pre", firstAdSource)
+            playerConfig.advertisingConfig = AdvertisingConfig(preRoll)
+        } else if(adSourceMidRoll != null && adSourcePostRoll == null){
+            val firstAdSource = AdSource(AdSourceType.Ima, adSourcePreRoll!!)
+            val preRoll = AdItem("pre", firstAdSource)
+            val secondAdSource = AdSource(AdSourceType.Ima, adSourceMidRoll!!)
+            val midRoll = AdItem("10%", secondAdSource)
+            playerConfig.advertisingConfig = AdvertisingConfig(preRoll, midRoll)
+        } else if(adSourcePreRoll != null && adSourceMidRoll != null && adSourcePostRoll != null){
+            val firstAdSource = AdSource(AdSourceType.Ima, adSourcePreRoll!!)
+            val preRoll = AdItem("pre", firstAdSource)
+            val secondAdSource = AdSource(AdSourceType.Ima, adSourceMidRoll!!)
+            val midRoll = AdItem("10%", secondAdSource)
+            val thirdAdSource = AdSource(AdSourceType.Ima, adSourcePostRoll!!)
+            val postRoll = AdItem("post", thirdAdSource)
+            playerConfig.advertisingConfig = AdvertisingConfig(preRoll, midRoll, postRoll)
         } else {
-            mediaSourceFactory.setAdsLoaderProvider { adsLoader }
-                .setAdViewProvider(playerView)
-            mediaItemBuild.setAdsConfiguration(
-                MediaItem.AdsConfiguration.Builder(Uri.parse(adURL)).build()
-            )
-            exoPlayer =
-                ExoPlayer.Builder(requireContext()).setMediaSourceFactory(mediaSourceFactory)
-                    .build()
-            serverSideAdsLoader!!.setPlayer(exoPlayer!!)
-            adsLoader?.setPlayer(exoPlayer)
+            playerConfig.playbackConfig.isAutoplayEnabled = true
         }
 
-        playerView?.player = exoPlayer
-        exoPlayer?.setMediaItem(mediaItemBuild.build())
-        exoPlayer?.prepare()
-
-        // Set PlayWhenReady. If true, content and ads will autoplay.
-        exoPlayer?.playWhenReady = true
-    }
-
-    /**
-     *  Creates the MediaSourceFactory for the Exoplayer.
-     *  If adURL is set, it also creates ImaServerSideAdInsertionMediaSource.
-     */
-    private fun createMediaSourceFactory(): DefaultMediaSourceFactory {
-        val defaultDataSourceFactory =
-            DefaultDataSourceFactory(requireContext(), Util.getUserAgent(requireContext(), "app"))
-        val mediaSourceFactory = DefaultMediaSourceFactory(defaultDataSourceFactory)
-
-        if (adURL.isEmpty()) {
-            return mediaSourceFactory
-        }
-
-        val serverSideAdLoaderBuilder =
-            ImaServerSideAdInsertionMediaSource.AdsLoader.Builder(requireContext(),
-                playerView!!
-            )
-        serverSideAdsLoader = serverSideAdLoaderBuilder.build()
-        val imaServerSideAdInsertionMediaSourceFactory =
-            ImaServerSideAdInsertionMediaSource.Factory(
-                serverSideAdsLoader!!, mediaSourceFactory
-            )
-
-        return mediaSourceFactory.setAdsLoaderProvider { adsLoader }
-            .setAdViewProvider(playerView)
-            .setServerSideAdInsertionMediaSourceFactory(imaServerSideAdInsertionMediaSourceFactory)
+        return playerConfig
     }
 
     override fun onResume() {
@@ -134,7 +92,7 @@ open class BaseVideoFragment : BaseFragment() {
         ) {
             return
         }
-        exoPlayer?.playWhenReady = true
+        player?.onResume()
     }
 
     override fun onPause() {
@@ -145,8 +103,7 @@ open class BaseVideoFragment : BaseFragment() {
         ) {
             return
         }
-        savedPlayerPosition = exoPlayer?.currentPosition ?: 0
-        exoPlayer?.playWhenReady = false
+        player?.onPause()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -163,40 +120,20 @@ open class BaseVideoFragment : BaseFragment() {
         }
     }
 
-    private fun showPlayerSpeedDialog() {
-        val popupMenu = PopupMenu(requireContext(), playbackSpeedControlImageButton!!)
-
-        val playerSpeedOptions = arrayOf(0.5f, 1.0f, 1.5f, 2.0f)
-
-        playerSpeedOptions.forEachIndexed { i, s -> popupMenu.menu.add(i, i, i, "${s}x") }
-
-        popupMenu.setOnMenuItemClickListener { item ->
-            changePlaybackSpeed(playerSpeedOptions[item.itemId])
-            false
-        }
-
-        popupMenu.show()
-    }
-
-    private fun changePlaybackSpeed(speed: Float): Unit? {
-        return exoPlayer?.setPlaybackParameters(PlaybackParameters(speed))
-    }
 
     override fun onStop() {
         super.onStop()
-        exoPlayer?.playWhenReady = false
+        player?.onStop()
     }
 
     override fun onDestroy() {
-        adsLoader?.release()
-
-        if (exoPlayer != null) {
-            exoPlayer?.stop()
-            exoPlayer?.release()
-            exoPlayer = null
+        if (player != null) {
+            player?.pause()
+            player?.destroy()
         }
         super.onDestroy()
     }
+
     private fun onStreamStartInputClicked(streamStartInput: EditText, clearStreamStartButton: ImageButton){
         val c = Calendar.getInstance()
 

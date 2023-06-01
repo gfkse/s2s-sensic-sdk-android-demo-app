@@ -38,7 +38,7 @@ open class LiveIMAFragment : BaseVideoFragment() {
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
             getString(R.string.fragment_title_live_ima)
-        return inflater.inflate(R.layout.video_fragment, container, false)
+        return inflater.inflate(R.layout.exoplayer_video_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,13 +61,16 @@ open class LiveIMAFragment : BaseVideoFragment() {
                         lastContentSensicEvent = SensicEvent.stop
                         contentAgent?.stop()
                     }
-                    lastAdPlay = System.currentTimeMillis();
-                    adPosition = 0;
+                    lastAdPlay = System.currentTimeMillis()
+                    adPosition = 0
                     adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
                 }
                 AdEvent.AdEventType.PAUSED, AdEvent.AdEventType.SKIPPED, AdEvent.AdEventType.AD_BUFFERING -> {
                     adPosition = System.currentTimeMillis() - lastAdPlay
                     adAgent?.stop(adPosition)
+                }
+                AdEvent.AdEventType.AD_PROGRESS -> {
+                    adPosition = System.currentTimeMillis() - lastAdPlay
                 }
                 AdEvent.AdEventType.RESUMED -> {
                     lastAdPlay = System.currentTimeMillis()
@@ -109,10 +112,10 @@ open class LiveIMAFragment : BaseVideoFragment() {
 
                 if (lastContentSensicEvent != SensicEvent.play && exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
                     soughtPosition = null
-                    lastContentSensicEvent = SensicEvent.play;
+                    lastContentSensicEvent = SensicEvent.play
                     contentAgent?.playStreamLive(contentIdDefault, "", 0, videoURL, getOptions(), null)
                 } else if (lastContentSensicEvent != SensicEvent.stop && exoPlayer?.isPlaying == false && exoPlayer?.isPlayingAd == false) {
-                    lastContentSensicEvent = SensicEvent.stop;
+                    lastContentSensicEvent = SensicEvent.stop
                     contentAgent?.stop()
                 }
             }
@@ -121,7 +124,7 @@ open class LiveIMAFragment : BaseVideoFragment() {
                 super.onPlaybackParametersChanged(playbackParameters)
                 if (exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
                     contentAgent?.stop()
-                    lastContentSensicEvent = SensicEvent.play;
+                    lastContentSensicEvent = SensicEvent.play
                     contentAgent?.playStreamLive(contentIdDefault, "", 0, videoURL, getOptions(), null)
                 }
             }

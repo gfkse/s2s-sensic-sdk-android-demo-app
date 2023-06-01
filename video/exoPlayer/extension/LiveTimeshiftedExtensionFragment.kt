@@ -11,9 +11,9 @@ import com.gfk.s2s.exoplayer.ExoplayerExtension
 import com.gfk.s2s.s2sExtension.ContentMetadata
 import com.gfk.s2s.s2sagent.S2SConfig
 
-class VODIMAExtensionFragment : BaseVideoFragment() {
+open class LiveTimeshiftedExtensionFragment : BaseVideoFragment() {
 
-    override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
+    override val videoURL = "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"
     private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
     private val mediaId = "s2s-exoplayer-android-demo"
 
@@ -23,15 +23,15 @@ class VODIMAExtensionFragment : BaseVideoFragment() {
         savedInstanceState: Bundle?
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
-            getString(R.string.fragment_title_vod_ima)
-        return inflater.inflate(R.layout.exoplayer_video_fragment, container, false)
+            getString(R.string.fragment_title_live_timeshifted)
+        return inflater.inflate(R.layout.exoplayer_video_fragment_timeshifted, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adURL = getString(R.string.ad_vmap_pods)
         super.prepareVideoPlayer()
+        prepareStreamStartInput(view)
 
         val config = S2SConfig(
             mediaId,
@@ -45,15 +45,17 @@ class VODIMAExtensionFragment : BaseVideoFragment() {
         customParams["cp2"] = "<your new cp2 value here>"
 
         val contentMetadata = ContentMetadata(customParams)
+        contentMetadata.streamStart = getStreamStart()
 
-        val extension = ExoplayerExtension(
-                exoPlayer!!,
-                config,
-                contentMetadata,
-                requireContext(),
-                this
+        extension = ExoplayerExtension(
+            exoPlayer!!,
+            config,
+            contentMetadata,
+            requireContext(),
+            this
         )
-
-        extension.activateNativeAdSupport()
     }
+
+
+
 }

@@ -16,6 +16,6 @@ class LiveNoSeekExtensionFragment : LiveExtensionFragment() {
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
             getString(R.string.fragment_title_live_no_seekbar)
-        return inflater.inflate(R.layout.video_fragment_no_seekbar, container, false)
+        return inflater.inflate(R.layout.exoplayer_video_fragment_no_seekbar, container, false)
     }
 }

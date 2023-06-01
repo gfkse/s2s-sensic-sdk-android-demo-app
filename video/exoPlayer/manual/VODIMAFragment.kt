@@ -14,7 +14,6 @@ import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
 import com.gfk.s2s.s2sExtension.SensicEvent
 import com.gfk.s2s.s2sagent.S2SAgent
-import com.gfk.s2s.utils.Logger
 import com.google.ads.interactivemedia.v3.api.AdEvent
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
@@ -38,7 +37,7 @@ class VODIMAFragment : BaseVideoFragment() {
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
             getString(R.string.fragment_title_vod_ima)
-        return inflater.inflate(R.layout.video_fragment, container, false)
+        return inflater.inflate(R.layout.exoplayer_video_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,13 +61,16 @@ class VODIMAFragment : BaseVideoFragment() {
                         lastContentSensicEvent = SensicEvent.stop
                         contentAgent?.stop()
                     }
-                    lastAdPlay = System.currentTimeMillis();
-                    adPosition = 0;
+                    lastAdPlay = System.currentTimeMillis()
+                    adPosition = 0
                     adAgent?.playStreamOnDemand(contentIdAd, videoURL + "ads", getOptions(), null)
                 }
                 AdEvent.AdEventType.PAUSED, AdEvent.AdEventType.SKIPPED, AdEvent.AdEventType.AD_BUFFERING -> {
                     adPosition = System.currentTimeMillis() - lastAdPlay
                     adAgent?.stop(adPosition)
+                }
+                AdEvent.AdEventType.AD_PROGRESS -> {
+                    adPosition = System.currentTimeMillis() - lastAdPlay
                 }
                 AdEvent.AdEventType.RESUMED -> {
                     lastAdPlay = System.currentTimeMillis()
@@ -78,7 +80,7 @@ class VODIMAFragment : BaseVideoFragment() {
                     adPosition = if (adEvent != null && adEvent.ad != null) {
                         adEvent.ad.duration.toLong() * 1000
                     } else {
-                        System.currentTimeMillis() - lastAdPlay;
+                        System.currentTimeMillis() - lastAdPlay
                     }
                     adAgent?.stop(adPosition)
                 }
@@ -114,10 +116,10 @@ class VODIMAFragment : BaseVideoFragment() {
                     if (remainingDuration < 10) {
                         return
                     }
-                    lastContentSensicEvent = SensicEvent.play;
+                    lastContentSensicEvent = SensicEvent.play
                     contentAgent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
                 } else if (lastContentSensicEvent != SensicEvent.stop && exoPlayer?.isPlaying == false && exoPlayer?.isPlayingAd == false) {
-                    lastContentSensicEvent = SensicEvent.stop;
+                    lastContentSensicEvent = SensicEvent.stop
                     contentAgent?.stop()
                 }
             }
@@ -125,7 +127,7 @@ class VODIMAFragment : BaseVideoFragment() {
                 super.onPlaybackParametersChanged(playbackParameters)
                 if (exoPlayer?.isPlaying == true && exoPlayer?.isPlayingAd == false) {
                     contentAgent?.stop()
-                    lastContentSensicEvent = SensicEvent.play;
+                    lastContentSensicEvent = SensicEvent.play
                     contentAgent?.playStreamOnDemand(contentIdDefault, videoURL, getOptions(), null)
                 }
             }
