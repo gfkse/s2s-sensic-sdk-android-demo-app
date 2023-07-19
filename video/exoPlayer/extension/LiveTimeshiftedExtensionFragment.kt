@@ -40,7 +40,7 @@ open class LiveTimeshiftedExtensionFragment : BaseVideoFragment() {
             null
         )
 
-        val customParams = HashMap<String, Any>()
+        val customParams = HashMap<String, String>()
         customParams["cp1"] = "<your new cp1 value here>"
         customParams["cp2"] = "<your new cp2 value here>"
 
