@@ -1,5 +1,6 @@
 package com.gfk.s2s.demo
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,10 +22,15 @@ class DashboardFragment : BaseFragment() {
     private var isExoplayerManualImplVisible = false
     private var isExoplayerExtensionImplVisible = false
 
+    private var isExoplayer3ImplVisible = false
+    private var isExoplayer3ManualImplVisible = false
+    private var isExoplayer3ExtensionImplVisible = false
+
     private var isBitmovinImplVisible = false
     private var isBitmoviManualImplVisible = false
     private var isBitmovinExtensionImplVisible = false
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view =  inflater.inflate(R.layout.dashboard_fragment, container, false)
@@ -39,6 +45,11 @@ class DashboardFragment : BaseFragment() {
                 isExoplayerImplVisible = false
                 isExoplayerManualImplVisible = false
                 isExoplayerExtensionImplVisible = false
+
+                isExoplayer3ImplVisible = false
+                isExoplayer3ManualImplVisible = false
+                isExoplayer3ExtensionImplVisible = false
+
                 isBitmovinImplVisible = false
                 isBitmoviManualImplVisible = false
                 isBitmovinExtensionImplVisible = false
@@ -46,6 +57,11 @@ class DashboardFragment : BaseFragment() {
                 view.findViewById<Group>(R.id.exoplayer_group).isVisible = isExoplayerImplVisible
                 view.findViewById<Group>(R.id.exoplayer_manual_group).isVisible = isExoplayerManualImplVisible
                 view.findViewById<Group>(R.id.exoplayer_extension_group).isVisible = isExoplayerExtensionImplVisible
+
+                view.findViewById<Group>(R.id.exoplayer3_group).isVisible = isExoplayer3ImplVisible
+                view.findViewById<Group>(R.id.exoplayer3_manual_group).isVisible = isExoplayer3ManualImplVisible
+                view.findViewById<Group>(R.id.exoplayer3_extension_group).isVisible = isExoplayer3ExtensionImplVisible
+
                 view.findViewById<Group>(R.id.bitmovin_group).isVisible = isBitmovinImplVisible
                 view.findViewById<Group>(R.id.bitmovin_manual_group).isVisible = isBitmoviManualImplVisible
                 view.findViewById<Group>(R.id.bitmovin_extension_group).isVisible = isBitmovinExtensionImplVisible
@@ -130,6 +146,68 @@ class DashboardFragment : BaseFragment() {
         view.findViewById<TextView>(R.id.exoplayer_extension_text_view).setOnClickListener{
             isExoplayerExtensionImplVisible = !isExoplayerExtensionImplVisible
             view.findViewById<Group>(R.id.exoplayer_extension_group).isVisible = isExoplayerExtensionImplVisible
+        }
+
+        /******************************Exoplayer3*****************************************/
+        view.findViewById<Button>(R.id.exoplayer3_vod_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3ActionDashBoardFragment_to_vodFragment)
+        }
+        view.findViewById<Button>(R.id.exoplayer3_live_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3ActionDashBoardFragment_to_liveFragment)
+        }
+        view.findViewById<Button>(R.id.exoplayer3_live_timeshifted_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3ActionDashBoardFragment_to_liveTimeshiftedFragment)
+        }
+        view.findViewById<Button>(R.id.exoplayer3_live_no_seek_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3ActionDashBoardFragment_to_LiveNoSeekFragment)
+        }
+        view.findViewById<Button>(R.id.exoplayer3_vod_ima_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3Action_dashboardFragment_to_vodImaFragment)
+        }
+        view.findViewById<Button>(R.id.exoplayer3_live_ima_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3Action_dashboardFragment_to_liveImaFragment)
+        }
+        view.findViewById<Button>(R.id.exoplayer3_vod_extension_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3ActionDashBoardFragment_to_vodExtensionFragment)
+        }
+        view.findViewById<Button>(R.id.exoplayer3_live_extension_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3ActionDashBoardFragment_to_liveExtensionFragment)
+        }
+        view.findViewById<Button>(R.id.exoplayer3_live_timeshifted_extension_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3ActionDashBoardFragment_to_liveTimeshiftedExtensionFragment)
+        }
+        view.findViewById<Button>(R.id.exoplayer3_live_no_seek_extension_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3Action_dashboardFragment_to_liveNoSeekExtensionFragment)
+        }
+        view.findViewById<Button>(R.id.exoplayer3_vod_ima_extension_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3Action_dashboardFragment_to_vodImaExtensionFragment)
+        }
+        view.findViewById<Button>(R.id.exoplayer3_live_ima_extension_button).setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3Action_dashboardFragment_to_liveImaExtensionFragment)
+        }
+
+        view.findViewById<Group>(R.id.exoplayer3_group).isVisible = isExoplayer3ImplVisible
+        view.findViewById<TextView>(R.id.exoplayer3_text_view).setOnClickListener{
+            isExoplayer3ImplVisible = !isExoplayer3ImplVisible
+            view.findViewById<Group>(R.id.exoplayer3_group).isVisible = isExoplayer3ImplVisible
+            if(!isExoplayer3ImplVisible){
+                isExoplayer3ManualImplVisible = false
+                isExoplayer3ExtensionImplVisible = false
+                view.findViewById<Group>(R.id.exoplayer3_manual_group).isVisible = isExoplayer3ManualImplVisible
+                view.findViewById<Group>(R.id.exoplayer3_extension_group).isVisible = isExoplayer3ExtensionImplVisible
+            }
+        }
+
+        view.findViewById<Group>(R.id.exoplayer3_manual_group).isVisible = isExoplayer3ManualImplVisible
+        view.findViewById<TextView>(R.id.exoplayer3_manual_text_view).setOnClickListener{
+            isExoplayer3ManualImplVisible = !isExoplayer3ManualImplVisible
+            view.findViewById<Group>(R.id.exoplayer3_manual_group).isVisible = isExoplayer3ManualImplVisible
+        }
+
+        view.findViewById<Group>(R.id.exoplayer3_extension_group).isVisible = isExoplayer3ExtensionImplVisible
+        view.findViewById<TextView>(R.id.exoplayer3_extension_text_view).setOnClickListener{
+            isExoplayer3ExtensionImplVisible = !isExoplayer3ExtensionImplVisible
+            view.findViewById<Group>(R.id.exoplayer3_extension_group).isVisible = isExoplayer3ExtensionImplVisible
         }
 
         /******************************Bitmovin*****************************************/

@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.video.exoPlayer.extension
+package com.gfk.s2s.demo.video.exoPlayer3.extension
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
-import com.gfk.s2s.exoplayer.ExoplayerExtension
+import com.gfk.s2s.demo.video.exoPlayer3.BaseVideoFragment
+import com.gfk.s2s.exoplayer.Exoplayer3Extension
 import com.gfk.s2s.s2sExtension.ContentMetadata
 import com.gfk.s2s.s2sagent.S2SConfig
 
-open class LiveExtensionFragment : BaseVideoFragment() {
+open class LiveTimeshiftedExtensionFragment : BaseVideoFragment() {
 
     override val videoURL = "https://mcdn.daserste.de/daserste/de/master.m3u8"
     private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
@@ -23,14 +23,15 @@ open class LiveExtensionFragment : BaseVideoFragment() {
         savedInstanceState: Bundle?
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
-            getString(R.string.fragment_title_live)
-        return inflater.inflate(R.layout.exoplayer_video_fragment, container, false)
+            getString(R.string.fragment_title_live_timeshifted)
+        return inflater.inflate(R.layout.exoplayer3_video_fragment_timeshifted, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         super.prepareVideoPlayer()
+        prepareStreamStartInput(view)
 
         val config = S2SConfig(
             mediaId,
@@ -44,8 +45,9 @@ open class LiveExtensionFragment : BaseVideoFragment() {
         customParams["cp2"] = "<your new cp2 value here>"
 
         val contentMetadata = ContentMetadata(customParams)
+        contentMetadata.streamStart = getStreamStart()
 
-        ExoplayerExtension(
+        extension = Exoplayer3Extension(
             exoPlayer!!,
             config,
             contentMetadata,
@@ -53,4 +55,7 @@ open class LiveExtensionFragment : BaseVideoFragment() {
             this
         )
     }
+
+
+
 }

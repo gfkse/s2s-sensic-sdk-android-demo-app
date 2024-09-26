@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.video.exoPlayer.extension
+package com.gfk.s2s.demo.video.exoPlayer3.extension
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
-import com.gfk.s2s.exoplayer.ExoplayerExtension
+import com.gfk.s2s.demo.video.exoPlayer3.BaseVideoFragment
+import com.gfk.s2s.exoplayer.Exoplayer3Extension
 import com.gfk.s2s.s2sExtension.ContentMetadata
 import com.gfk.s2s.s2sagent.S2SConfig
 
-open class LiveExtensionFragment : BaseVideoFragment() {
+class LiveImaExtensionFragment : BaseVideoFragment() {
 
     override val videoURL = "https://mcdn.daserste.de/daserste/de/master.m3u8"
     private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
@@ -23,13 +23,14 @@ open class LiveExtensionFragment : BaseVideoFragment() {
         savedInstanceState: Bundle?
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
-            getString(R.string.fragment_title_live)
-        return inflater.inflate(R.layout.exoplayer_video_fragment, container, false)
+            getString(R.string.fragment_title_live_ima)
+        return inflater.inflate(R.layout.exoplayer3_video_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        adURL = getString(R.string.ad_pre_roll_linear_skippable)
         super.prepareVideoPlayer()
 
         val config = S2SConfig(
@@ -45,12 +46,14 @@ open class LiveExtensionFragment : BaseVideoFragment() {
 
         val contentMetadata = ContentMetadata(customParams)
 
-        ExoplayerExtension(
+        val extension = Exoplayer3Extension(
             exoPlayer!!,
             config,
             contentMetadata,
             requireContext(),
             this
         )
+
+        extension.activateNativeAdSupport()
     }
 }

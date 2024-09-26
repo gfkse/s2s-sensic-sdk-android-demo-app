@@ -1,14 +1,16 @@
 package com.gfk.s2s.demo.video.exoPlayer.extension
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import com.gfk.s2s.demo.MainActivity
 import com.gfk.s2s.demo.s2s.R
 
 class LiveNoSeekExtensionFragment : LiveExtensionFragment() {
-
+    @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -16,6 +18,15 @@ class LiveNoSeekExtensionFragment : LiveExtensionFragment() {
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
             getString(R.string.fragment_title_live_no_seekbar)
-        return inflater.inflate(R.layout.exoplayer_video_fragment_no_seekbar, container, false)
+        val view = inflater.inflate(R.layout.exoplayer_video_fragment_no_seekbar, container, false)
+        view?.findViewById<ImageButton>(R.id.exo_pause)?.setOnClickListener {
+            exoPlayer?.pause()
+        }
+        view?.findViewById<ImageButton>(R.id.exo_play)?.setOnClickListener {
+            exoPlayer?.play()
+            exoPlayer?.seekToDefaultPosition()
+        }
+
+        return view
     }
 }

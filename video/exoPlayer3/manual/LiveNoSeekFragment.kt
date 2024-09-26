@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.video.exoPlayer.manual
+package com.gfk.s2s.demo.video.exoPlayer3.manual
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -19,7 +19,7 @@ class LiveNoSeekFragment : LiveFragment() {
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
             getString(R.string.fragment_title_live_no_seekbar)
-        val view = inflater.inflate(R.layout.exoplayer_video_fragment_no_seekbar, container, false)
+        val view = inflater.inflate(R.layout.exoplayer3_video_fragment_no_seekbar, container, false)
         view?.findViewById<ImageButton>(R.id.exo_pause)?.setOnClickListener {
             exoPlayer?.pause()
         }
