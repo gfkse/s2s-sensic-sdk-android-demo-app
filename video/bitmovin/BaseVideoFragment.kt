@@ -7,6 +7,7 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -53,6 +54,25 @@ open class BaseVideoFragment : BaseFragment() {
         player = Player.create(this.requireContext(), playerConfig)
         playerView?.player = player
         player?.load(SourceConfig.fromUrl(videoURL))
+
+        val seekForwardButton: Button? = view?.findViewById(R.id.seekForwardButton)
+        val seekBackwardButton: Button? = view?.findViewById(R.id.seekBackwardButton)
+
+        // Seek forward 10 seconds when the forward button is clicked
+        seekForwardButton?.setOnClickListener {
+            val currentPosition = player?.currentTime
+            if (currentPosition != null) {
+                player?.seek(currentPosition + 10.0)
+            } // Seek forward by 10 seconds
+        }
+
+        // Seek backward 10 seconds when the backward button is clicked
+        seekBackwardButton?.setOnClickListener {
+            val currentPosition = player?.currentTime
+            if (currentPosition != null) {
+                player?.seek(currentPosition - 10.0)
+            } // Seek backward by 10 seconds
+        }
     }
 
     protected open fun playerConfig(): PlayerConfig{
