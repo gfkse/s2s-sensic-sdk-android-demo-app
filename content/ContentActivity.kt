@@ -18,7 +18,6 @@ class ContentActivity : AppCompatActivity() {
     private var videoUrl = "http://sensic.net/"
     private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
 
-    @SuppressLint("SetJavaScriptEnabled")
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         agent = S2SAgent(configUrl, mediaId, this)
@@ -34,7 +33,6 @@ class ContentActivity : AppCompatActivity() {
                 agent.impression("default", customParams)
             }
         }
-        webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.loadUrl(videoUrl)
     }

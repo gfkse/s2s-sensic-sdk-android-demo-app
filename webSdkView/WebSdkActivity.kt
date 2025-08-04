@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.gfk.s2s.demo.s2s.R
 
 class WebSdkActivity : AppCompatActivity() {
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_web_sdk)
@@ -22,7 +21,6 @@ class WebSdkActivity : AppCompatActivity() {
                 return super.shouldOverrideUrlLoading(view, url)
             }
         }
-        webview.settings.javaScriptEnabled = true
         webview.settings.domStorageEnabled = true
         webview.settings.allowFileAccess = true
         webview.settings.allowContentAccess = true
