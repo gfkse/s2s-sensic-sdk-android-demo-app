@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.video.exoPlayer3
+package com.gfk.s2s.demo.s2s.video.exoPlayer3
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -27,12 +27,12 @@ import androidx.media3.exoplayer.ima.ImaServerSideAdInsertionMediaSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory.AdsLoaderProvider
 import androidx.media3.ui.PlayerView
-import com.gfk.s2s.demo.BaseFragment
+import com.gfk.s2s.demo.s2s.BaseFragment
 import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.exoplayer.Exoplayer3Extension
 import com.gfk.s2s.s2sExtension.ContentMetadata
 import com.google.ads.interactivemedia.v3.api.AdEvent
-import java.util.*
+import java.util.Calendar
 
 /**
  * class BaseVideoFragment has the code to show the exoplayer.

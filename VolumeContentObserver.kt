@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo
+package com.gfk.s2s.demo.s2s
 
 import android.content.Context
 import android.database.ContentObserver

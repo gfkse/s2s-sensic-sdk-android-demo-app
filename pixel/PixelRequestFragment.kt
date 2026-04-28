@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.pixel
+package com.gfk.s2s.demo.s2s.pixel
 
 import android.os.Bundle
 import android.util.Log
@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.gfk.s2s.demo.BaseFragment
-import com.gfk.s2s.demo.MainActivity
+import com.gfk.s2s.demo.s2s.BaseFragment
+import com.gfk.s2s.demo.s2s.MainActivity
 import com.gfk.s2s.demo.s2s.R
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result

@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.audio.exoPlayer2
+package com.gfk.s2s.demo.s2s.audio.exoPlayer
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -30,14 +30,14 @@ object ExoPlayerNotificationManager {
         // Since ExoPlayer 2.17.1 doesn't have player.mediaMetadata, use defaults
         val contentTitle = context.getString(R.string.audio_stream)
         val contentText = context.getString(R.string.app_name)
-        val largeIcon = BitmapFactory.decodeResource(context.resources, R.drawable.media3_icon_album)
+        val largeIcon = BitmapFactory.decodeResource(context.resources, androidx.media3.session.R.drawable.media3_icon_album)
 
 
         val position = player.currentPosition
 
         // Build Notification
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.media3_icon_album)
+            .setSmallIcon(androidx.media3.session.R.drawable.media3_icon_album)
             .setContentTitle(contentTitle)
             .setContentText(contentText)
             .setLargeIcon(largeIcon)

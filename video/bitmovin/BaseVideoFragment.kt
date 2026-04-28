@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.video.bitmovin
+package com.gfk.s2s.demo.s2s.video.bitmovin
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -20,11 +20,11 @@ import com.bitmovin.player.api.advertising.AdSource
 import com.bitmovin.player.api.advertising.AdSourceType
 import com.bitmovin.player.api.advertising.AdvertisingConfig
 import com.bitmovin.player.api.source.SourceConfig
-import com.gfk.s2s.demo.BaseFragment
-import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.bitmovinplayer.BitmovinplayerExtension
+import com.gfk.s2s.demo.s2s.BaseFragment
+import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.s2sExtension.ContentMetadata
-import java.util.*
+import java.util.Calendar
 
 /**
  * class BaseVideoFragment has the code to show the exoplayer.
@@ -34,7 +34,7 @@ import java.util.*
 
 open class BaseVideoFragment : BaseFragment() {
     private var playerView: PlayerView? = null
-    protected var player: Player? = null
+    protected var player: com.bitmovin.player.api.Player? = null
     open val videoURL = ""
     private var selectedStreamStartDate: String = ""
     private var selectedStreamStartTime: String = ""

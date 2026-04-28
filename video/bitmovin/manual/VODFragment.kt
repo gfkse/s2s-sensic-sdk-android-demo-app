@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.video.bitmovin.manual
+package com.gfk.s2s.demo.s2s.video.bitmovin.manual
 
 import android.os.Bundle
 import android.os.Handler
@@ -7,18 +7,20 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.gfk.s2s.demo.MainActivity
-import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.s2sagent.S2SAgent
 import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.player.api.event.on
-import com.gfk.s2s.demo.VolumeContentObserver
-import com.gfk.s2s.demo.video.bitmovin.BaseVideoFragment
+import com.gfk.s2s.demo.s2s.DemoApplication.Companion.configURL
+import com.gfk.s2s.demo.s2s.MainActivity
+import com.gfk.s2s.demo.s2s.R
+import com.gfk.s2s.demo.s2s.VolumeContentObserver
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.vdoVideoUrl
+import com.gfk.s2s.demo.s2s.video.bitmovin.BaseVideoFragment
+import com.gfk.s2s.s2sagent.S2SAgent
 
 
 class VODFragment : BaseVideoFragment() {
-    override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
-    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
+    override val videoURL = vdoVideoUrl
+    private val configUrl = configURL
     private val mediaId = "s2s-bitmovinplayer-android-demo"
     private var agent: S2SAgent? = null
     private var volumeContentObserver: VolumeContentObserver? = null

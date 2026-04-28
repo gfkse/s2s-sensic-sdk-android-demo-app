@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.audio.exoPlayer2
+package com.gfk.s2s.demo.s2s.audio.exoPlayer
 
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -15,7 +15,7 @@ import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import com.gfk.s2s.demo.BaseFragment
+import com.gfk.s2s.demo.s2s.BaseFragment
 import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.exoplayer.ExoplayerExtension
 import com.google.android.exoplayer2.ExoPlayer
@@ -58,7 +58,7 @@ open class BaseAudioFragment : BaseFragment() {
         exoPlayer?.prepare(mediaSource)
         exoPlayer?.playWhenReady = true
 
-         ExoPlayerReceiver.setPlayer(exoPlayer!!, requireContext())
+        ExoPlayerReceiver.setPlayer(exoPlayer!!, requireContext())
          ExoPlayerNotificationManager.showNotification(requireContext(), exoPlayer!!, mediaSession)
     }
 

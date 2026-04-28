@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.video.exoPlayer.extension
+package com.gfk.s2s.demo.s2s.video.exoPlayer.extension
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import com.gfk.s2s.demo.MainActivity
+import com.gfk.s2s.demo.s2s.MainActivity
 import com.gfk.s2s.demo.s2s.R
 
 class LiveNoSeekExtensionFragment : LiveExtensionFragment() {

@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.audio.exoPlayer3.manual
+package com.gfk.s2s.demo.s2s.audio.exoPlayer3.manual
 
 import android.os.Bundle
 import android.os.Handler
@@ -9,16 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
-import com.gfk.s2s.demo.MainActivity
+import com.gfk.s2s.demo.s2s.DemoApplication.Companion.configURL
+import com.gfk.s2s.demo.s2s.MainActivity
 import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.demo.VolumeContentObserver
-import com.gfk.s2s.demo.audio.exoPlayer3.BaseAudioFragment
+import com.gfk.s2s.demo.s2s.VolumeContentObserver
+import com.gfk.s2s.demo.s2s.audio.exoPlayer3.BaseAudioFragment
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.aodAudioURL
 import com.gfk.s2s.s2sagent.S2SAgent
 
 
 class AODFragment : BaseAudioFragment() {
-    override val audioURL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
+    override val audioURL = aodAudioURL
+    private val configUrl = configURL
     private val mediaId = "s2s-exoplayer-android-demo"
     private val contentIdDefault = "default"
     private var volumeContentObserver: VolumeContentObserver? = null

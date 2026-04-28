@@ -1,11 +1,11 @@
-package com.gfk.s2s.demo.video.bitmovin.manual
+package com.gfk.s2s.demo.s2s.video.bitmovin.manual
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bitmovin.player.api.PlayerConfig
-import com.gfk.s2s.demo.MainActivity
+import com.gfk.s2s.demo.s2s.MainActivity
 import com.gfk.s2s.demo.s2s.R
 
 class LiveNoSeekFragment : LiveFragment() {

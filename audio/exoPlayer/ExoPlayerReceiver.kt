@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.audio.exoPlayer2
+package com.gfk.s2s.demo.s2s.audio.exoPlayer
 
 import android.content.BroadcastReceiver
 import android.content.Context

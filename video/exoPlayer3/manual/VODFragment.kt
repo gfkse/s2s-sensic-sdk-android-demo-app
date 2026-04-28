@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.video.exoPlayer3.manual
+package com.gfk.s2s.demo.s2s.video.exoPlayer3.manual
 
 import android.os.Bundle
 import android.os.Handler
@@ -9,16 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
-import com.gfk.s2s.demo.MainActivity
+import com.gfk.s2s.demo.s2s.DemoApplication.Companion.configURL
+import com.gfk.s2s.demo.s2s.MainActivity
 import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.demo.VolumeContentObserver
+import com.gfk.s2s.demo.s2s.VolumeContentObserver
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.vdoVideoUrl
+import com.gfk.s2s.demo.s2s.video.exoPlayer3.BaseVideoFragment
 import com.gfk.s2s.s2sagent.S2SAgent
-import com.gfk.s2s.demo.video.exoPlayer3.BaseVideoFragment
 
 
 class VODFragment : BaseVideoFragment() {
-    override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
-    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
+    override val videoURL = vdoVideoUrl
+    private val configUrl = configURL
     private val mediaId = "s2s-exoplayer-android-demo"
     private val contentIdDefault = "default"
     private var volumeContentObserver: VolumeContentObserver? = null

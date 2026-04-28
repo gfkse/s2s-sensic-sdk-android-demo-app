@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.video.exoPlayer
+package com.gfk.s2s.demo.s2s.video.exoPlayer
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -13,7 +13,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.gfk.s2s.demo.BaseFragment
+import com.gfk.s2s.demo.s2s.BaseFragment
 import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.exoplayer.ExoplayerExtension
 import com.gfk.s2s.s2sExtension.ContentMetadata
@@ -27,7 +27,7 @@ import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import java.util.*
+import java.util.Calendar
 
 /**
  * class BaseVideoFragment has the code to show the exoplayer.

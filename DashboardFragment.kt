@@ -1,13 +1,14 @@
-package com.gfk.s2s.demo
+package com.gfk.s2s.demo.s2s
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
-import com.gfk.s2s.demo.s2s.R
+import com.gfk.s2s.demo.s2s.constants.DemoConstants
 import com.gfk.s2s.demo.s2s.databinding.DashboardFragmentBinding
 
 class DashboardFragment : BaseFragment() {
@@ -400,8 +401,31 @@ class DashboardFragment : BaseFragment() {
             findNavController().navigate(R.id.action_dashboardFragment_to_settingsFragment)
         }
 
-        return binding.root
+        binding.spinnerOptions.apply {
+            val adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                DemoConstants.configArray.keys.toList()
+            )
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            setAdapter(adapter)
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    DemoApplication.configURL = DemoConstants.configArray.values.toList()[position]
+                }
 
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    // Optional: handle case when nothing is selected
+                }
+            }
+        }
+
+        return binding.root
     }
 
     override fun onResume() {

@@ -1,20 +1,23 @@
-package com.gfk.s2s.demo.video.exoPlayer3.extension
+package com.gfk.s2s.demo.s2s.video.exoPlayer3.extension
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.gfk.s2s.demo.MainActivity
+import com.gfk.s2s.demo.s2s.DemoApplication.Companion.configURL
+import com.gfk.s2s.demo.s2s.MainActivity
 import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.demo.video.exoPlayer3.BaseVideoFragment
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.adPreRollLinearSkippable
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.liveImaVideoURL
+import com.gfk.s2s.demo.s2s.video.exoPlayer3.BaseVideoFragment
 import com.gfk.s2s.exoplayer.Exoplayer3Extension
 import com.gfk.s2s.s2sExtension.ContentMetadata
 import com.gfk.s2s.s2sagent.S2SConfig
 
 class LiveImaExtensionFragment : BaseVideoFragment() {
 
-    override val videoURL = "https://mcdn.daserste.de/daserste/de/master.m3u8"
-    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
+    override val videoURL = liveImaVideoURL
+    private val configUrl = configURL
     private val mediaId = "s2s-exoplayer-android-demo"
 
     override fun onCreateView(
@@ -30,7 +33,7 @@ class LiveImaExtensionFragment : BaseVideoFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adURL = getString(R.string.ad_pre_roll_linear_skippable)
+        adURL = adPreRollLinearSkippable
         super.prepareVideoPlayer()
 
         val config = S2SConfig(
@@ -46,7 +49,7 @@ class LiveImaExtensionFragment : BaseVideoFragment() {
 
         val contentMetadata = ContentMetadata(customParams)
 
-        val extension = Exoplayer3Extension(
+        extension = Exoplayer3Extension(
             exoPlayer!!,
             config,
             contentMetadata,
@@ -54,6 +57,6 @@ class LiveImaExtensionFragment : BaseVideoFragment() {
             this
         )
 
-        extension.activateNativeAdSupport()
+        extension?.activateNativeAdSupport()
     }
 }

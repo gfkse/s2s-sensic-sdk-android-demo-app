@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.settings
+package com.gfk.s2s.demo.s2s.settings
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.Switch
-import com.gfk.s2s.demo.BaseFragment
-import com.gfk.s2s.demo.MainActivity
+import com.gfk.s2s.demo.s2s.BaseFragment
+import com.gfk.s2s.demo.s2s.MainActivity
 import com.gfk.s2s.demo.s2s.R
 
 class SettingsFragment : BaseFragment() {

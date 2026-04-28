@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.webSdkView
+package com.gfk.s2s.demo.s2s.webSdkView
 
 import android.annotation.SuppressLint
 import android.os.Bundle

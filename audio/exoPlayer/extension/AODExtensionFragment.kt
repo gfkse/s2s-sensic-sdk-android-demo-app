@@ -1,20 +1,22 @@
-package com.gfk.s2s.demo.audio.exoPlayer.extension
+package com.gfk.s2s.demo.s2s.audio.exoPlayer.extension
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.gfk.s2s.demo.MainActivity
-import com.gfk.s2s.demo.audio.exoPlayer2.BaseAudioFragment
+import com.gfk.s2s.demo.s2s.DemoApplication.Companion.configURL
+import com.gfk.s2s.demo.s2s.MainActivity
 import com.gfk.s2s.demo.s2s.R
+import com.gfk.s2s.demo.s2s.audio.exoPlayer.BaseAudioFragment
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.aodAudioURL
 import com.gfk.s2s.exoplayer.ExoplayerExtension
 import com.gfk.s2s.s2sExtension.ContentMetadata
 import com.gfk.s2s.s2sagent.S2SConfig
 
 class AODExtensionFragment : BaseAudioFragment() {
 
-    override val audioURL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
+    override val audioURL = aodAudioURL
+    private val configUrl = configURL
     private val mediaId = "s2s-exoplayer-android-demo"
 
     override fun onCreateView(

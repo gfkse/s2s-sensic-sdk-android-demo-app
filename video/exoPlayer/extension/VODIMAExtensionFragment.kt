@@ -1,20 +1,23 @@
-package com.gfk.s2s.demo.video.exoPlayer.extension
+package com.gfk.s2s.demo.s2s.video.exoPlayer.extension
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.gfk.s2s.demo.MainActivity
+import com.gfk.s2s.demo.s2s.DemoApplication.Companion.configURL
+import com.gfk.s2s.demo.s2s.MainActivity
 import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.demo.video.exoPlayer.BaseVideoFragment
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.adVmaPods
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.vdoVideoUrl
+import com.gfk.s2s.demo.s2s.video.exoPlayer.BaseVideoFragment
 import com.gfk.s2s.exoplayer.ExoplayerExtension
 import com.gfk.s2s.s2sExtension.ContentMetadata
 import com.gfk.s2s.s2sagent.S2SConfig
 
 class VODIMAExtensionFragment : BaseVideoFragment() {
 
-    override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
-    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
+    override val videoURL = vdoVideoUrl
+    private val configUrl = configURL
     private val mediaId = "s2s-exoplayer-android-demo"
 
     override fun onCreateView(
@@ -30,7 +33,7 @@ class VODIMAExtensionFragment : BaseVideoFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adURL = getString(R.string.ad_vmap_pods)
+        adURL = adVmaPods
         super.prepareVideoPlayer()
 
         val config = S2SConfig(
@@ -46,7 +49,7 @@ class VODIMAExtensionFragment : BaseVideoFragment() {
 
         val contentMetadata = ContentMetadata(customParams)
 
-        val extension = ExoplayerExtension(
+       extension = ExoplayerExtension(
                 exoPlayer!!,
                 config,
                 contentMetadata,
@@ -54,6 +57,6 @@ class VODIMAExtensionFragment : BaseVideoFragment() {
                 this
         )
 
-        extension.activateNativeAdSupport()
+        extension?.activateNativeAdSupport()
     }
 }

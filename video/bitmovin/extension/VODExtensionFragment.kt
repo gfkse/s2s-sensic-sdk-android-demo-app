@@ -1,20 +1,22 @@
-package com.gfk.s2s.demo.video.bitmovin.extension
+package com.gfk.s2s.demo.s2s.video.bitmovin.extension
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.gfk.s2s.demo.MainActivity
-import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.demo.video.bitmovin.BaseVideoFragment
 import com.gfk.s2s.bitmovinplayer.BitmovinplayerExtension
+import com.gfk.s2s.demo.s2s.DemoApplication.Companion.configURL
+import com.gfk.s2s.demo.s2s.MainActivity
+import com.gfk.s2s.demo.s2s.R
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.vdoVideoUrl
+import com.gfk.s2s.demo.s2s.video.bitmovin.BaseVideoFragment
 import com.gfk.s2s.s2sExtension.ContentMetadata
 import com.gfk.s2s.s2sagent.S2SConfig
 
 class VODExtensionFragment : BaseVideoFragment() {
 
-    override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
-    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
+    override val videoURL = vdoVideoUrl
+    private val configUrl = configURL
     private val mediaId = "s2s-exoplayer-android-demo"
 
     override fun onCreateView(

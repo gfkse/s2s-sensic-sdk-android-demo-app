@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.audio.exoPlayer3
+package com.gfk.s2s.demo.s2s.audio.exoPlayer3
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -34,7 +34,7 @@ object ExoPlayerNotificationManager {
         val metadata = player.mediaMetadata
         val contentTitle = metadata.title ?: context.getString(R.string.audio_stream)
         val contentText = metadata.artist ?: context.getString(R.string.app_name)
-        val largeIcon = BitmapFactory.decodeResource(context.resources, R.drawable.media3_icon_album)
+        val largeIcon = BitmapFactory.decodeResource(context.resources, androidx.media3.session.R.drawable.media3_icon_album)
 
         val duration = player.duration
         val position = player.currentPosition
@@ -43,7 +43,7 @@ object ExoPlayerNotificationManager {
 
         // Build Notification
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.media3_icon_album)
+            .setSmallIcon(androidx.media3.session.R.drawable.media3_icon_album)
             .setContentTitle(contentTitle)
             .setContentText(contentText)
             .setLargeIcon(largeIcon)

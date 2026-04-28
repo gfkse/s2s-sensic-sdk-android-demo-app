@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.video.bitmovin.manual
+package com.gfk.s2s.demo.s2s.video.bitmovin.manual
 
 import android.os.Bundle
 import android.os.Handler
@@ -9,16 +9,21 @@ import android.view.View
 import android.view.ViewGroup
 import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.player.api.event.on
-import com.gfk.s2s.demo.MainActivity
+import com.gfk.s2s.demo.s2s.DemoApplication.Companion.configURL
+import com.gfk.s2s.demo.s2s.MainActivity
 import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.demo.VolumeContentObserver
-import com.gfk.s2s.demo.video.bitmovin.BaseVideoFragment
+import com.gfk.s2s.demo.s2s.VolumeContentObserver
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.adPreRollLinearSkippable
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.adSourcePostRollUrl
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.adSourcePreRollUrl
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.vdoVideoUrl
+import com.gfk.s2s.demo.s2s.video.bitmovin.BaseVideoFragment
 import com.gfk.s2s.s2sagent.S2SAgent
 
 
 class VODIMAFragment : BaseVideoFragment() {
-    override val videoURL = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
-    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
+    override val videoURL = vdoVideoUrl
+    private val configUrl = configURL
     private val mediaId = "s2s-bitmovinplayer-android-demo"
     private var contentAgent: S2SAgent? = null
     private var adAgent: S2SAgent? = null
@@ -42,9 +47,9 @@ class VODIMAFragment : BaseVideoFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adSourcePreRoll = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="
-        adSourceMidRoll = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
-        adSourcePostRoll = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dredirectlinear&correlator="
+        adSourcePreRoll = adSourcePreRollUrl
+        adSourceMidRoll = adPreRollLinearSkippable
+        adSourcePostRoll = adSourcePostRollUrl
 
         var firstPlayEvent = false
         prepareVideoPlayer()
@@ -98,7 +103,7 @@ class VODIMAFragment : BaseVideoFragment() {
         }
 
 
-        player?.on<PlayerEvent.AdStarted> {
+        player?.on<PlayerEvent.AdStarted> { event ->
             adAgent?.playStreamOnDemand("ad", videoURL, getOptions(), null)
         }
 

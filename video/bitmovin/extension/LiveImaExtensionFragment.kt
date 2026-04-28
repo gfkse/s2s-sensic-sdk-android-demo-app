@@ -1,20 +1,23 @@
-package com.gfk.s2s.demo.video.bitmovin.extension
+package com.gfk.s2s.demo.s2s.video.bitmovin.extension
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.gfk.s2s.demo.MainActivity
-import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.demo.video.bitmovin.BaseVideoFragment
 import com.gfk.s2s.bitmovinplayer.BitmovinplayerExtension
+import com.gfk.s2s.demo.s2s.DemoApplication.Companion.configURL
+import com.gfk.s2s.demo.s2s.MainActivity
+import com.gfk.s2s.demo.s2s.R
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.adSourcePreRollUrl
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.liveImaVideoURL
+import com.gfk.s2s.demo.s2s.video.bitmovin.BaseVideoFragment
 import com.gfk.s2s.s2sExtension.ContentMetadata
 import com.gfk.s2s.s2sagent.S2SConfig
 
 class LiveImaExtensionFragment : BaseVideoFragment() {
 
-    override val videoURL = "https://mcdn.daserste.de/daserste/de/master.m3u8"
-    private val configUrl = "https://demo-config.sensic.net/s2s-android.json"
+    override val videoURL = liveImaVideoURL
+    private val configUrl = configURL
     private val mediaId = "s2s-exoplayer-android-demo"
 
     override fun onCreateView(
@@ -30,7 +33,7 @@ class LiveImaExtensionFragment : BaseVideoFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adSourcePreRoll = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="
+        adSourcePreRoll = adSourcePreRollUrl
 
         prepareVideoPlayer()
 
@@ -47,7 +50,7 @@ class LiveImaExtensionFragment : BaseVideoFragment() {
 
         val contentMetadata = ContentMetadata(customParams)
 
-        val extension = BitmovinplayerExtension(
+        extension = BitmovinplayerExtension(
             player!!,
             config,
             contentMetadata,
@@ -55,6 +58,6 @@ class LiveImaExtensionFragment : BaseVideoFragment() {
             this
         )
 
-        extension.activateNativeAdSupport()
+        extension?.activateNativeAdSupport()
     }
 }

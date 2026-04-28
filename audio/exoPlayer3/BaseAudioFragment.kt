@@ -1,4 +1,4 @@
-package com.gfk.s2s.demo.audio.exoPlayer3
+package com.gfk.s2s.demo.s2s.audio.exoPlayer3
 
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.OptIn
@@ -19,7 +18,7 @@ import androidx.media3.datasource.DefaultDataSourceFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
-import com.gfk.s2s.demo.BaseFragment
+import com.gfk.s2s.demo.s2s.BaseFragment
 import com.gfk.s2s.demo.s2s.R
 import com.gfk.s2s.exoplayer.Exoplayer3Extension
 
