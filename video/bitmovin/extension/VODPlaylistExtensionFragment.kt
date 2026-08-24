@@ -4,21 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bitmovin.player.api.playlist.PlaylistConfig
+import com.bitmovin.player.api.playlist.PlaylistOptions
+import com.bitmovin.player.api.source.Source
+import com.bitmovin.player.api.source.SourceConfig
 import com.gfk.s2s.bitmovinplayer.BitmovinplayerExtension
 import com.gfk.s2s.demo.s2s.DemoApplication.Companion.configURL
 import com.gfk.s2s.demo.s2s.MainActivity
 import com.gfk.s2s.demo.s2s.R
-import com.gfk.s2s.demo.s2s.constants.DemoConstants.adPreRollLinearSkippable
-import com.gfk.s2s.demo.s2s.constants.DemoConstants.adSourcePostRollUrl
-import com.gfk.s2s.demo.s2s.constants.DemoConstants.adSourcePreRollUrl
 import com.gfk.s2s.demo.s2s.constants.DemoConstants.vdoVideoUrl
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.vdoVideoUrl1
+import com.gfk.s2s.demo.s2s.constants.DemoConstants.vdoVideoUrl2
 import com.gfk.s2s.demo.s2s.video.bitmovin.BaseVideoFragment
 import com.gfk.s2s.s2sExtension.ContentMetadata
 import com.gfk.s2s.s2sagent.S2SConfig
 
-open class VODIMAExtensionFragment : BaseVideoFragment() {
-
-    override val videoURL = vdoVideoUrl
+class VODPlaylistExtensionFragment : BaseVideoFragment() {
     private val configUrl = configURL
     private val mediaId = "s2s-bitmovin-player-android-demo"
 
@@ -28,18 +29,37 @@ open class VODIMAExtensionFragment : BaseVideoFragment() {
         savedInstanceState: Bundle?
     ): View? {
         (activity as? MainActivity)?.supportActionBar?.title =
-            getString(R.string.fragment_title_vod_ima)
-        return inflater.inflate(R.layout.bitmovin_video_fragment, container, false)
+            getString(R.string.fragment_title_vod_playlist)
+        return inflater.inflate(R.layout.bitmovin_video_playlist_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val sourceConfig1 = SourceConfig(
+            url = vdoVideoUrl
+        ).apply {
+            title = "First Video"
+        }
+        val source1 = Source.create(sourceConfig1)
 
-        adSourcePreRoll = adSourcePreRollUrl
-        adSourceMidRoll = adPreRollLinearSkippable
-        adSourcePostRoll = adSourcePostRollUrl
+        val sourceConfig2 = SourceConfig(
+            url = vdoVideoUrl2
+        ).apply {
+            title = "Second Video"
+        }
+        val source2 = Source.create(sourceConfig2)
 
-        prepareVideoPlayer()
+        val sourceConfig3 = SourceConfig(
+            url = vdoVideoUrl1
+        ).apply {
+            title = "Third Video"
+        }
+        val source3 = Source.create(sourceConfig3)
+
+        prepareVideoPlayerWithPlaylist(PlaylistConfig(
+            sources = listOf(source1, source2, source3),
+            options = PlaylistOptions()
+        ))
 
         val config = S2SConfig(
             mediaId,
@@ -54,14 +74,12 @@ open class VODIMAExtensionFragment : BaseVideoFragment() {
 
         val contentMetadata = ContentMetadata(customParams)
 
-        extension = BitmovinplayerExtension(
+        BitmovinplayerExtension(
             player!!,
             config,
             contentMetadata,
             requireContext(),
             this
         )
-
-        extension?.activateNativeAdSupport()
     }
 }

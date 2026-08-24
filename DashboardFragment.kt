@@ -146,6 +146,9 @@ class DashboardFragment : BaseFragment() {
         binding.exoplayerLiveImaButton.setOnClickListener {
             findNavController().navigate(R.id.exoplayerAction_dashboardFragment_to_liveImaFragment)
         }
+        binding.exoplayerVodTcfButton.setOnClickListener {
+            findNavController().navigate(R.id.exoplayerAction_dashboardFragment_to_vodTcfFragment)
+        }
         binding.exoplayerVodExtensionButton.setOnClickListener {
             findNavController().navigate(R.id.exoplayerActionDashBoardFragment_to_vodExtensionFragment)
         }
@@ -163,6 +166,12 @@ class DashboardFragment : BaseFragment() {
         }
         binding.exoplayerLiveImaExtensionButton.setOnClickListener {
             findNavController().navigate(R.id.exoplayerAction_dashboardFragment_to_liveImaExtensionFragment)
+        }
+        binding.exoplayerVodPlaylistExtensionButton.setOnClickListener {
+            findNavController().navigate(R.id.exoplayerAction_dashboardFragment_to_vodPlaylistExtensionFragment)
+        }
+        binding.exoplayerVodTcfExtensionButton.setOnClickListener {
+            findNavController().navigate(R.id.exoplayerAction_dashboardFragment_to_vodPTcfExtensionFragment)
         }
 
         binding.exoplayerGroup.isVisible = isExoplayerImplVisible
@@ -209,6 +218,9 @@ class DashboardFragment : BaseFragment() {
         binding.exoplayer3LiveImaButton.setOnClickListener {
             findNavController().navigate(R.id.exoplayer3Action_dashboardFragment_to_liveImaFragment)
         }
+        binding.exoplayer3VodTcfButton.setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3Action_dashboardFragment_to_vodTcfFragment)
+        }
         binding.exoplayer3VodExtensionButton.setOnClickListener {
             findNavController().navigate(R.id.exoplayer3ActionDashBoardFragment_to_vodExtensionFragment)
         }
@@ -226,6 +238,12 @@ class DashboardFragment : BaseFragment() {
         }
         binding.exoplayer3LiveImaExtensionButton.setOnClickListener {
             findNavController().navigate(R.id.exoplayer3Action_dashboardFragment_to_liveImaExtensionFragment)
+        }
+        binding.exoplayer3VodPlaylistExtensionButton.setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3ActionDashBoardFragment_to_vodPlaylistExtensionFragment)
+        }
+        binding.exoplayer3VodTcfExtensionButton.setOnClickListener {
+            findNavController().navigate(R.id.exoplayer3ActionDashBoardFragment_to_vodTcfExtensionFragment)
         }
 
         binding.exoplayer3Group.isVisible = isExoplayer3ImplVisible
@@ -343,6 +361,9 @@ class DashboardFragment : BaseFragment() {
         binding.bitmovinLiveImaButton.setOnClickListener {
             findNavController().navigate(R.id.bitmovinAction_dashboardFragment_to_liveImaFragment)
         }
+        binding.bitmovinVodTcfButton.setOnClickListener {
+            findNavController().navigate(R.id.bitmovinAction_dashboardFragment_to_vodTcfFragment)
+        }
         binding.bitmovinVodExtensionButton.setOnClickListener {
             findNavController().navigate(R.id.bitmovinActionDashBoardFragment_to_vodExtensionFragment)
         }
@@ -360,6 +381,12 @@ class DashboardFragment : BaseFragment() {
         }
         binding.bitmovinLiveImaExtensionButton.setOnClickListener {
             findNavController().navigate(R.id.bitmovinAction_dashboardFragment_to_liveImaExtensionFragment)
+        }
+        binding.bitmovinVodPlaylistExtensionButton.setOnClickListener {
+            findNavController().navigate(R.id.bitmovinAction_dashboardFragment_to_vodPlaylistExtensionFragment)
+        }
+        binding.bitmovinVodTcfExtensionButton.setOnClickListener {
+            findNavController().navigate(R.id.bitmovinAction_dashboardFragment_to_vodTcfExtensionFragment)
         }
 
         binding.bitmovinGroup.isVisible = isBitmovinImplVisible

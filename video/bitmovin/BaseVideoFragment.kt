@@ -19,6 +19,7 @@ import com.bitmovin.player.api.advertising.AdItem
 import com.bitmovin.player.api.advertising.AdSource
 import com.bitmovin.player.api.advertising.AdSourceType
 import com.bitmovin.player.api.advertising.AdvertisingConfig
+import com.bitmovin.player.api.playlist.PlaylistConfig
 import com.bitmovin.player.api.source.SourceConfig
 import com.gfk.s2s.bitmovinplayer.BitmovinplayerExtension
 import com.gfk.s2s.demo.s2s.BaseFragment
@@ -34,7 +35,7 @@ import java.util.Calendar
 
 open class BaseVideoFragment : BaseFragment() {
     private var playerView: PlayerView? = null
-    protected var player: com.bitmovin.player.api.Player? = null
+    protected var player: Player? = null
     open val videoURL = ""
     private var selectedStreamStartDate: String = ""
     private var selectedStreamStartTime: String = ""
@@ -43,6 +44,8 @@ open class BaseVideoFragment : BaseFragment() {
     protected var adSourcePreRoll: String? = null
     protected var adSourceMidRoll: String? = null
     protected var adSourcePostRoll: String? = null
+
+    private var currentTrackIndex = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,6 +75,61 @@ open class BaseVideoFragment : BaseFragment() {
             if (currentPosition != null) {
                 player?.seek(currentPosition - 10.0)
             } // Seek backward by 10 seconds
+        }
+    }
+
+    protected fun prepareVideoPlayerWithPlaylist(playlistConfig: PlaylistConfig) {
+
+        val playerConfig = playerConfig()
+        player = Player.create(this.requireContext(), playerConfig)
+        playerView?.player = player
+        player?.load(playlistConfig)
+
+        val seekForwardButton: Button? = view?.findViewById(R.id.seekForwardButton)
+        val seekBackwardButton: Button? = view?.findViewById(R.id.seekBackwardButton)
+
+        // Seek forward 10 seconds when the forward button is clicked
+        seekForwardButton?.setOnClickListener {
+            val currentPosition = player?.currentTime
+            if (currentPosition != null) {
+                player?.seek(currentPosition + 10.0)
+            } // Seek forward by 10 seconds
+        }
+
+        // Seek backward 10 seconds when the backward button is clicked
+        seekBackwardButton?.setOnClickListener {
+            val currentPosition = player?.currentTime
+            if (currentPosition != null) {
+                player?.seek(currentPosition - 10.0)
+            } // Seek backward by 10 seconds
+        }
+
+        val nextButton: Button? = view?.findViewById(R.id.nextButton)
+        val previousButton: Button? = view?.findViewById(R.id.previousButton)
+        nextButton?.setOnClickListener {
+            val player = playerView?.player
+            val totalTracks = playlistConfig.sources.size
+
+            // Verify there is an upcoming video track in the config array
+            if (currentTrackIndex < totalTracks - 1) {
+                currentTrackIndex++
+                val nextSource = playlistConfig.sources[currentTrackIndex]
+
+                // Command the playlist engine to jump to the designated source
+                player?.playlist?.seek(nextSource, 0.0)
+            }
+        }
+        previousButton?.setOnClickListener {
+            val player = playerView?.player
+
+            // Verify there is a preceding video track in the config array
+            if (currentTrackIndex > 0) {
+                currentTrackIndex--
+                val previousSource = playlistConfig.sources[currentTrackIndex]
+
+                // Command the playlist engine to jump to the designated source
+                player?.playlist?.seek(previousSource, 0.0)
+            }
         }
     }
 

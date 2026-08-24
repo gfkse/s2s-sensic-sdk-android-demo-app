@@ -97,6 +97,25 @@ open class BaseVideoFragment : BaseFragment() {
         exoPlayer?.playWhenReady = true
     }
 
+    fun prepareVideoPlayerWithPlaylist(playlist: List<MediaItem>) {
+
+        if (exoPlayer != null) {
+            exoPlayer?.stop()
+            exoPlayer?.release()
+        }
+
+        exoPlayer = ExoPlayer.Builder(requireContext()).build()
+
+        playerView?.player = exoPlayer
+        playlist.forEach {
+            exoPlayer?.addMediaItem(it)
+        }
+        exoPlayer?.prepare()
+
+        // Set PlayWhenReady. If true, content and ads will autoplay.
+        exoPlayer?.playWhenReady = true
+    }
+
     /**
      *  Creates the MediaSourceFactory for the Exoplayer.
      *  If adURL is set, it also creates ImaServerSideAdInsertionMediaSource.

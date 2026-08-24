@@ -11,6 +11,8 @@ object DemoConstants {
     const val aodAudioURL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
     const val audioLiveUrl = "https://stream.rockantenne.de/90er-rock/stream/mp3"
     const val vdoVideoUrl = "https://demo-config-preproduction.sensic.net/video/video3.mp4"
+    const val vdoVideoUrl2 = "https://demo-config-preproduction.sensic.net/video/video2.mp4"
+    const val vdoVideoUrl1 = "https://demo-config-preproduction.sensic.net/video/video1.mp4"
     const val liveTimeShiftedVideoURL = "https://ireplay.tv/test/blender.m3u8" //"https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"
     const val liveImaVideoURL = "https://ireplay.tv/test/blender.m3u8" //"https://mcdn.daserste.de/daserste/de/master.m3u8"
     const val adSourcePreRollUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="

@@ -17,7 +17,7 @@ class VODExtensionFragment : BaseVideoFragment() {
 
     override val videoURL = vdoVideoUrl
     private val configUrl = configURL
-    private val mediaId = "s2s-exoplayer-android-demo"
+    private val mediaId = "s2s-bitmovin-player-android-demo"
 
     override fun onCreateView(
         inflater: LayoutInflater,
